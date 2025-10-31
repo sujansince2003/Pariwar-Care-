@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { scheduleVisit, getChildVisits, getNurses, assignNurseToVisit, getNurseVisits } from '../controllers/visitController'
+import { scheduleVisit, getChildVisits, getNurses, assignNurseToVisit, getNurseVisits, startVisit, submitVitals, completeVisit } from '../controllers/visitController'
 import { authenticateToken } from '../middlwares/auth'
 import { requireRole } from '../middlwares/rbac'
 
@@ -165,5 +165,93 @@ router.post('/:id/assign', authenticateToken, requireRole(['ADMIN']), assignNurs
  *         description: List of visits assigned to the logged-in nurse
  */
 router.get('/nurse', authenticateToken, requireRole(['NURSE']), getNurseVisits)
+
+/**
+ * @swagger
+ * /api/visits/{id}/start:
+ *   post:
+ *     tags: [Visits]
+ *     summary: Start visit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Visit ID
+ *     responses:
+ *       200:
+ *         description: Visit started successfully
+ */
+router.post('/:id/start', authenticateToken, requireRole(['NURSE']), startVisit)
+
+/**
+ * @swagger
+ * /api/visits/{id}/vitals:
+ *   post:
+ *     tags: [Visits]
+ *     summary: Submit vitals data
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Visit ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bp:
+ *                 type: string
+ *                 description: Blood pressure
+ *               sugar:
+ *                 type: string
+ *                 description: Blood sugar level
+ *               pulse:
+ *                 type: string
+ *                 description: Pulse rate
+ *               oxygen:
+ *                 type: string
+ *                 description: Oxygen saturation
+ *               temperature:
+ *                 type: string
+ *                 description: Body temperature
+ *               notes:
+ *                 type: string
+ *                 description: General notes
+ *     responses:
+ *       200:
+ *         description: Vitals submitted successfully
+ */
+router.post('/:id/vitals', authenticateToken, requireRole(['NURSE']), submitVitals)
+
+/**
+ * @swagger
+ * /api/visits/{id}/complete:
+ *   post:
+ *     tags: [Visits]
+ *     summary: Complete visit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Visit ID
+ *     responses:
+ *       200:
+ *         description: Visit completed successfully
+ */
+router.post('/:id/complete', authenticateToken, requireRole(['NURSE']), completeVisit)
 
 export default router
