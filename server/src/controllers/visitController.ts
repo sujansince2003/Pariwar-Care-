@@ -81,11 +81,13 @@ export const scheduleVisit = async (req: AuthenticatedRequest, res: Response) =>
             message: 'Visit scheduled successfully',
             data: { visit }
         })
+        return
     } catch (error: any) {
         res.status(400).json({
             success: false,
             message: error.message || 'Failed to schedule visit'
         })
+        return
     }
 }
 
