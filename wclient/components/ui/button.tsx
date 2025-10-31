@@ -13,7 +13,7 @@ export const Button: React.FC<ButtonProps> = ({
   const base = "rounded-lg px-4 py-2 font-medium transition-colors";
   const styles =
     variant === "primary"
-      ? "bg-[#5B9BD5] text-white hover:bg-blue-600"
+      ? "bg-blue-600 text-white hover:bg-blue-500"
       : "bg-white border border-[#5B9BD5] text-[#5B9BD5] hover:bg-[#5B9BD5] hover:text-white";
 
   return (

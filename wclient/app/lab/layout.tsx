@@ -8,15 +8,15 @@ export const metadata = {
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <header className="bg-white ">
+    <div className="min-h-screen  text-gray-900">
+      <header className="bg-white p-2">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/lab" className="text-lg font-semibold text-blue-700">
-            Sewa Lab
+          SewaCycle
           </Link>
 
           <nav className="flex items-center gap-4">
-            <Link href="/auth/login" className="text-sm text-red-600 hover:text-red-700">
+            <Link href="/auth/login" className="inline-flex items-center px-4 py-2 rounded-md bg-white text-blue-600 border border-blue-600 shadow-sm hover:bg-blue-50 transitio">
               Sign out
             </Link>
           </nav>
