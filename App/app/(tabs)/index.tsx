@@ -7,96 +7,99 @@ import {
   TouchableOpacity,
 } from "react-native"
 import { Link } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function HomeTab() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.h1}>ParentCare — Dashboard</Text>
+    <SafeAreaView>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.h1}>ParentCare — Dashboard</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Active Parent</Text>
-        <Text style={styles.cardSubtitle}>Mrs. Anita Sharma, 78</Text>
-        <Text style={styles.small}>Last reported: 2 hours ago</Text>
-      </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Active Parent</Text>
+          <Text style={styles.cardSubtitle}>Mrs. Anita Sharma, 78</Text>
+          <Text style={styles.small}>Last reported: 2 hours ago</Text>
+        </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Health Summary</Text>
-        <View style={styles.row}>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>72</Text>
-            <Text style={styles.statLabel}>HR</Text>
-          </View>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>120/78</Text>
-            <Text style={styles.statLabel}>BP</Text>
-          </View>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>98%</Text>
-            <Text style={styles.statLabel}>SpO2</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Health Summary</Text>
+          <View style={styles.row}>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>72</Text>
+              <Text style={styles.statLabel}>HR</Text>
+            </View>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>120/78</Text>
+              <Text style={styles.statLabel}>BP</Text>
+            </View>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>98%</Text>
+              <Text style={styles.statLabel}>SpO2</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Alerts</Text>
-        <Text style={styles.alert}>• Missed medication reminder (today)</Text>
-        <Text style={styles.alert}>• New report available</Text>
-      </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Alerts</Text>
+          <Text style={styles.alert}>• Missed medication reminder (today)</Text>
+          <Text style={styles.alert}>• New report available</Text>
+        </View>
 
-      <View style={styles.actions}>
-        <Link href="/add-parent" asChild>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Add Parent</Text>
-          </TouchableOpacity>
-        </Link>
-
-        <Link href="/parent/1" asChild>
-          <TouchableOpacity style={styles.buttonOutline}>
-            <Text style={styles.buttonOutlineText}>Parent Profile</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
-
-      <View style={styles.shortcuts}>
-        <Text style={styles.menuTitle}>Shortcuts</Text>
-        <View style={styles.shortcutsRow}>
-          <Link href="/book-appointment" asChild>
-            <TouchableOpacity style={styles.tile}>
-              <Text style={styles.tileText}>Book</Text>
-              <Text style={styles.tileSub}>Appointment</Text>
+        <View style={styles.actions}>
+          <Link href="/add-parent" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Add Parent</Text>
             </TouchableOpacity>
           </Link>
 
-          <Link href="/appointment-status" asChild>
-            <TouchableOpacity style={styles.tile}>
-              <Text style={styles.tileText}>Appointments</Text>
-              <Text style={styles.tileSub}>Status</Text>
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/report-viewer" asChild>
-            <TouchableOpacity style={styles.tile}>
-              <Text style={styles.tileText}>Reports</Text>
-              <Text style={styles.tileSub}>Latest</Text>
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/notifications" asChild>
-            <TouchableOpacity style={styles.tile}>
-              <Text style={styles.tileText}>Alerts</Text>
-              <Text style={styles.tileSub}>Notifications</Text>
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/login" asChild>
-            <TouchableOpacity style={styles.tile}>
-              <Text style={styles.tileText}>Account</Text>
-              <Text style={styles.tileSub}>Login</Text>
+          <Link href="/parent/1" asChild>
+            <TouchableOpacity style={styles.buttonOutline}>
+              <Text style={styles.buttonOutlineText}>Parent Profile</Text>
             </TouchableOpacity>
           </Link>
         </View>
-      </View>
-    </ScrollView>
+
+        <View style={styles.shortcuts}>
+          <Text style={styles.menuTitle}>Shortcuts</Text>
+          <View style={styles.shortcutsRow}>
+            <Link href="/book-appointment" asChild>
+              <TouchableOpacity style={styles.tile}>
+                <Text style={styles.tileText}>Book</Text>
+                <Text style={styles.tileSub}>Appointment</Text>
+              </TouchableOpacity>
+            </Link>
+
+            <Link href="/appointment-status" asChild>
+              <TouchableOpacity style={styles.tile}>
+                <Text style={styles.tileText}>Appointments</Text>
+                <Text style={styles.tileSub}>Status</Text>
+              </TouchableOpacity>
+            </Link>
+
+            <Link href="/report-viewer" asChild>
+              <TouchableOpacity style={styles.tile}>
+                <Text style={styles.tileText}>Reports</Text>
+                <Text style={styles.tileSub}>Latest</Text>
+              </TouchableOpacity>
+            </Link>
+
+            <Link href="/notifications" asChild>
+              <TouchableOpacity style={styles.tile}>
+                <Text style={styles.tileText}>Alerts</Text>
+                <Text style={styles.tileSub}>Notifications</Text>
+              </TouchableOpacity>
+            </Link>
+
+            <Link href="/login" asChild>
+              <TouchableOpacity style={styles.tile}>
+                <Text style={styles.tileText}>Account</Text>
+                <Text style={styles.tileSub}>Login</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
