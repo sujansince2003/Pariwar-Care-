@@ -108,6 +108,12 @@ export default function LabDashboardPage() {
           </p>
         </div>
 
+        <div className="flex items-center gap-3">
+          <Link href="/lab/tests/new" className="inline-flex items-center px-4 py-2 bg-white border rounded shadow-sm text-sm hover:bg-gray-50">
+            + New Test
+          </Link>
+          <Link href="/lab/reports" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded shadow-sm text-sm hover:bg-blue-700">
+            View Reports 
         <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
           <Link
             href="/lab/appointments"
