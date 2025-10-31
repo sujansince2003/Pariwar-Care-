@@ -20,6 +20,15 @@ const assignNurseSchema = z.object({
     nurseId: z.string().min(1, 'Nurse ID is required')
 })
 
+const vitalsSchema = z.object({
+    bp: z.string().optional(),
+    sugar: z.string().optional(),
+    pulse: z.string().optional(),
+    oxygen: z.string().optional(),
+    temperature: z.string().optional(),
+    notes: z.string().optional()
+})
+
 // POST /visits - Schedule appointment
 export const scheduleVisit = async (req: AuthenticatedRequest, res: Response) => {
     try {
@@ -261,6 +270,144 @@ export const getNurseVisits = async (req: AuthenticatedRequest, res: Response) =
         res.status(400).json({
             success: false,
             message: error.message || 'Failed to get nurse visits'
+        })
+    }
+}
+
+// POST /visits/:id/start - Start visit
+export const startVisit = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const visitId = req.params.id
+
+        const visit = await prisma.visit.findFirst({
+            where: {
+                id: visitId,
+                nurseId: req.user!.userId,
+                status: 'ASSIGNED'
+            }
+        })
+
+        if (!visit) {
+            res.json({
+                message: "visit not found or not assigned to you"
+            })
+            return
+        }
+
+        const updatedVisit = await prisma.visit.update({
+            where: { id: visitId },
+            data: { status: 'STARTED' }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Visit started successfully',
+            data: { visit: updatedVisit }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to start visit'
+        })
+    }
+}
+
+// POST /visits/:id/vitals - Submit vitals
+export const submitVitals = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const visitId = req.params.id
+        const validatedData = vitalsSchema.safeParse(req.body)
+        
+        if (!validatedData.success) {
+            res.json({
+                message: "invalid data"
+            })
+            return
+        }
+
+        const visit = await prisma.visit.findFirst({
+            where: {
+                id: visitId,
+                nurseId: req.user!.userId,
+                status: 'STARTED'
+            }
+        })
+
+        if (!visit) {
+            res.json({
+                message: "visit not found or not started"
+            })
+            return
+        }
+
+        const vitals = await prisma.vitals.upsert({
+            where: { visitId },
+            update: validatedData.data,
+            create: {
+                visitId,
+                ...validatedData.data
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Vitals submitted successfully',
+            data: { vitals }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to submit vitals'
+        })
+    }
+}
+
+// POST /visits/:id/complete - Complete visit
+export const completeVisit = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const visitId = req.params.id
+
+        const visit = await prisma.visit.findFirst({
+            where: {
+                id: visitId,
+                nurseId: req.user!.userId,
+                status: 'STARTED'
+            }
+        })
+
+        if (!visit) {
+            res.json({
+                message: "visit not found or not started"
+            })
+            return
+        }
+
+        const updatedVisit = await prisma.visit.update({
+            where: { id: visitId },
+            data: {
+                status: 'COMPLETED',
+                completedAt: new Date()
+            },
+            include: {
+                vitals: true,
+                Parent: {
+                    select: {
+                        name: true,
+                        address: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Visit completed successfully',
+            data: { visit: updatedVisit }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to complete visit'
         })
     }
 }
