@@ -62,19 +62,7 @@ export default function HomeTab() {
         <View style={styles.shortcuts}>
           <Text style={styles.menuTitle}>Shortcuts</Text>
           <View style={styles.shortcutsRow}>
-            <Link href="/book-appointment" asChild>
-              <TouchableOpacity style={styles.tile}>
-                <Text style={styles.tileText}>Book</Text>
-                <Text style={styles.tileSub}>Appointment</Text>
-              </TouchableOpacity>
-            </Link>
-
-            <Link href="/appointment-status" asChild>
-              <TouchableOpacity style={styles.tile}>
-                <Text style={styles.tileText}>Appointments</Text>
-                <Text style={styles.tileSub}>Status</Text>
-              </TouchableOpacity>
-            </Link>
+          
 
             <Link href="/report-viewer" asChild>
               <TouchableOpacity style={styles.tile}>
@@ -90,7 +78,7 @@ export default function HomeTab() {
               </TouchableOpacity>
             </Link>
 
-            <Link href="/login" asChild>
+            <Link href="/" asChild>
               <TouchableOpacity style={styles.tile}>
                 <Text style={styles.tileText}>Account</Text>
                 <Text style={styles.tileSub}>Login</Text>
