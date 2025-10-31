@@ -60,6 +60,7 @@ model Vitals {
   pulse       String?
   oxygen      String?
   temperature String?
+  notes       String?
   Visit       Visit    @relation(fields: [visitId], references: [id])
   createdAt   DateTime @default(now())
 }
