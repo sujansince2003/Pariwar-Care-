@@ -4,10 +4,8 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   Image,
 } from "react-native"
-import { Link } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function ProfileScreen() {
@@ -19,8 +17,6 @@ export default function ProfileScreen() {
     address: "12 MG Road, Pune",
     emergency: { name: "Ravi Sharma", phone: "+91 91234 56789" },
     meds: [
-      "Amlodipine 5mg - daily",
-      "Metformin 500mg - twice daily",
       "Amlodipine 5mg - daily",
       "Metformin 500mg - twice daily",
     ],
@@ -146,38 +142,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginTop: 4,
-  },
-  actionsCenter: {
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "center",
-    marginTop: 12,
-  },
-  button: {
-    backgroundColor: "#2f80ed",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    minWidth: 150,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 15,
-  },
-  buttonOutline: {
-    borderWidth: 2,
-    borderColor: "#2f80ed",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    minWidth: 150,
-    alignItems: "center",
-  },
-  buttonOutlineText: {
-    color: "#2f80ed",
-    fontWeight: "700",
-    fontSize: 15,
   },
 })

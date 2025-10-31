@@ -48,6 +48,19 @@ export default function TabLayout() {
           // tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+
+      <Tabs.Screen
+        name="add-parent"
+        options={{
+          title: "add-parent",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" color={color} size={size} />
+          ),
+          headerShown: false,
+
+          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
       <Tabs.Screen
         name="profile"
         options={{
