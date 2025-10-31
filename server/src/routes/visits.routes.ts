@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { scheduleVisit, getChildVisits } from '../controllers/visitController'
+import { scheduleVisit, getChildVisits, getNurses, assignNurseToVisit, getNurseVisits } from '../controllers/visitController'
 import { authenticateToken } from '../middlwares/auth'
+import { requireRole } from '../middlwares/rbac'
 
 const router = Router()
 
@@ -117,5 +118,52 @@ router.post('/', authenticateToken, scheduleVisit)
  *         description: Failed to retrieve visits
  */
 router.get('/child', authenticateToken, getChildVisits)
+
+/**
+ * @swagger
+ * /api/visits/{id}/assign:
+ *   post:
+ *     tags: [Visits]
+ *     summary: Assign nurse to visit
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Visit ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nurseId
+ *             properties:
+ *               nurseId:
+ *                 type: string
+ *                 description: ID of the nurse to assign
+ *     responses:
+ *       200:
+ *         description: Nurse assigned successfully
+ */
+router.post('/:id/assign', authenticateToken, requireRole(['ADMIN']), assignNurseToVisit)
+
+/**
+ * @swagger
+ * /api/visits/nurse:
+ *   get:
+ *     tags: [Visits]
+ *     summary: Get nurse's assigned visits
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of visits assigned to the logged-in nurse
+ */
+router.get('/nurse', authenticateToken, requireRole(['NURSE']), getNurseVisits)
 
 export default router
