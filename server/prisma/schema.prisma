@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CHILD
+  NURSE
+  ADMIN
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  role        Role
+  parents     Parent[] @relation("ChildParents")
+  nurseVisits Visit[]  @relation("NurseVisits")
+  createdAt   DateTime @default(now())
+}
+
+model Parent {
+  id          String  @id @default(cuid())
+  name        String
+  age         Int
+  address     String
+  diseases    String?
+  medications String?
+  children    User[]  @relation("ChildParents")
+  visits      Visit[]
+}
+
+model Visit {
+  id           String      @id @default(cuid())
+  parentId     String
+  nurseId      String?
+  scheduledFor DateTime
+  status       VisitStatus @default(PENDING)
+  notes        String?
+  completedAt  DateTime?
+  vitals       Vitals?
+  Parent       Parent      @relation(fields: [parentId], references: [id])
+  Nurse        User?       @relation("NurseVisits", fields: [nurseId], references: [id])
+  createdAt    DateTime    @default(now())
+}
+
+model Vitals {
+  id          String   @id @default(cuid())
+  visitId     String   @unique
+  bp          String?
+  sugar       String?
+  pulse       String?
+  oxygen      String?
+  temperature String?
+  Visit       Visit    @relation(fields: [visitId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+enum VisitStatus {
+  PENDING
+  ASSIGNED
+  STARTED
+  COMPLETED
+}
