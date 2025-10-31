@@ -25,14 +25,16 @@ model User {
 }
 
 model Parent {
-  id          String  @id @default(cuid())
-  name        String
-  age         Int
-  address     String
-  diseases    String?
-  medications String?
-  children    User[]  @relation("ChildParents")
-  visits      Visit[]
+  id               String  @id @default(cuid())
+  name             String
+  age              Int
+  gender           String
+  address          String
+  diseases         String?
+  medications      String?
+  emergencyContact String
+  children         User[]  @relation("ChildParents")
+  visits           Visit[]
 }
 
 model Visit {
