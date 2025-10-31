@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Ionicons } from "@expo/vector-icons"
 import Entypo from "@expo/vector-icons/Entypo"
 
+import FontAwesome from "@expo/vector-icons/FontAwesome"
 
 
 
@@ -24,37 +25,31 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Entypo name="home" size={24} color="black" />
+            <Entypo name="home" size={size} color={color} />
           ),
           headerShown: false,
           // tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          headerShown: false,
 
-          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
       <Tabs.Screen
         name="bookappointment"
         options={{
-          title: "Book Appointment",
+          title: " Appointment",
           headerShown: false,
 
-          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="calendar" size={size} color={color} />
+          ),
         }}
       />
 
       <Tabs.Screen
         name="add-parent"
         options={{
-          title: "add-parent",
+          title: "Add Patient",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" color={color} size={size} />
+            <Entypo name="add-user" size={size} color={ color} />
           ),
           headerShown: false,
 

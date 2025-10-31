@@ -45,7 +45,7 @@ export default function LabDashboardPage() {
             + New Test
           </Link>
           <Link href="/lab/reports" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded shadow-sm text-sm hover:bg-blue-700">
-            View Reports
+            View Reports 
           </Link>
         </div>
       </header>
