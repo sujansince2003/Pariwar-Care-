@@ -7,8 +7,15 @@ import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/users'
 import parentRoutes from './routes/parents.routes'
 
+import swaggerUi from 'swagger-ui-express'
+import { specs } from './config/swagger'
+
 // Load environment variables
 dotenv.config()
+
+
+
+// Add after other middleware
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -22,6 +29,9 @@ app.use(cors({
     origin: process.env.NODE_ENV === 'production' ? 'your-frontend-url' : 'http://localhost:3000',
     credentials: true
 }))
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
+
 
 // Static files
 app.use("/uploads/images", express.static("src/uploads/images"))
