@@ -399,6 +399,10 @@ export const completeVisit = async (req: AuthenticatedRequest, res: Response) =>
             }
         })
 
+        // Send email notification to children
+        const { sendVisitCompletionEmail } = await import('../utils/sendEmail')
+        sendVisitCompletionEmail(visitId).catch(console.error)
+
         res.status(200).json({
             success: true,
             message: 'Visit completed successfully',
