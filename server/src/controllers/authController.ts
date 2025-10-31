@@ -83,6 +83,7 @@ export const signupController = async (req: Request, res: Response) => {
             message: 'User created successfully',
             data: { user }
         })
+        return
     } catch (error: any) {
         if (error.name === 'ZodError') {
             return res.status(400).json({
@@ -96,6 +97,7 @@ export const signupController = async (req: Request, res: Response) => {
             success: false,
             message: error.message || 'Signup failed'
         })
+        return
     }
 }
 
