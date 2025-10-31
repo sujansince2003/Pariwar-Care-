@@ -19,6 +19,10 @@ router.get('/', requireAdmin, async (req: Request, res: Response) => {
             data: { users }
         })
     } catch (error) {
+        console.error('Failed to fetch users:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString()
+        })
         res.status(500).json({
             success: false,
             message: 'Failed to fetch users'
@@ -57,6 +61,11 @@ router.get('/:id', async (req: Request, res: Response) => {
             data: { user }
         })
     } catch (error) {
+        console.error('Failed to fetch user:', {
+            userId: req.params.id,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString()
+        })
         res.status(500).json({
             success: false,
             message: 'Failed to fetch user'
