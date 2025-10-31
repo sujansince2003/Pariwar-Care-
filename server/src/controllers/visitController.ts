@@ -16,6 +16,10 @@ const visitSchema = z.object({
     visitType: z.enum(['BASIC', 'FULL'])
 })
 
+const assignNurseSchema = z.object({
+    nurseId: z.string().min(1, 'Nurse ID is required')
+})
+
 // POST /visits - Schedule appointment
 export const scheduleVisit = async (req: AuthenticatedRequest, res: Response) => {
     try {
@@ -115,6 +119,148 @@ export const getChildVisits = async (req: AuthenticatedRequest, res: Response) =
         res.status(400).json({
             success: false,
             message: error.message || 'Failed to get visits'
+        })
+    }
+}
+
+// GET /nurses - Get list of nurses
+export const getNurses = async (req: Request, res: Response) => {
+    try {
+        const nurses = await prisma.user.findMany({
+            where: {
+                role: 'NURSE'
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Nurses retrieved successfully',
+            data: { nurses }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to get nurses'
+        })
+    }
+}
+
+// POST /visits/:id/assign - Assign nurse to visit
+export const assignNurseToVisit = async (req: Request, res: Response) => {
+    try {
+        const visitId = req.params.id
+        const validatedData = assignNurseSchema.safeParse(req.body)
+        
+        if (!validatedData.success) {
+            res.json({
+                message: "invalid data"
+            })
+            return
+        }
+
+        const { nurseId } = validatedData.data
+
+        // Check if visit exists
+        const visit = await prisma.visit.findUnique({
+            where: { id: visitId }
+        })
+
+        if (!visit) {
+            res.json({
+                message: "visit not found"
+            })
+            return
+        }
+
+        // Check if nurse exists and has NURSE role
+        const nurse = await prisma.user.findFirst({
+            where: {
+                id: nurseId,
+                role: 'NURSE'
+            }
+        })
+
+        if (!nurse) {
+            res.json({
+                message: "nurse not found"
+            })
+            return
+        }
+
+        // Assign nurse to visit
+        const updatedVisit = await prisma.visit.update({
+            where: { id: visitId },
+            data: {
+                nurseId,
+                status: 'ASSIGNED'
+            },
+            include: {
+                Parent: {
+                    select: {
+                        name: true,
+                        address: true
+                    }
+                },
+                Nurse: {
+                    select: {
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Nurse assigned successfully',
+            data: { visit: updatedVisit }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to assign nurse'
+        })
+    }
+}
+
+// GET /visits/nurse - Get nurse's assigned visits
+export const getNurseVisits = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const visits = await prisma.visit.findMany({
+            where: {
+                nurseId: req.user!.userId
+            },
+            include: {
+                Parent: {
+                    select: {
+                        name: true,
+                        age: true,
+                        address: true,
+                        diseases: true,
+                        medications: true,
+                        emergencyContact: true
+                    }
+                }
+            },
+            orderBy: {
+                scheduledFor: 'asc'
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Nurse visits retrieved successfully',
+            data: { visits }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to get nurse visits'
         })
     }
 }
