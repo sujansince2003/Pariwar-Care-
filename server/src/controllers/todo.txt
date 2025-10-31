@@ -1,1 +1,2 @@
-test
+// Controllers will be implemented here
+// Example: userController.ts, authController.ts, visitController.ts
