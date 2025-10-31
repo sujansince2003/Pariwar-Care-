@@ -8,6 +8,7 @@ import userRoutes from './routes/users'
 import parentRoutes from './routes/parents.routes'
 import visitRoutes from './routes/visits.routes'
 import nursesRoutes from './routes/nurses.routes'
+import analyticsRoutes from './routes/analytics.routes'
 
 import swaggerUi from 'swagger-ui-express'
 import { specs } from './config/swagger'
@@ -61,6 +62,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/parents', parentRoutes)
 app.use('/api/visits', visitRoutes)
 app.use('/api/nurses', nursesRoutes)
+app.use('/api/analytics', analyticsRoutes)
 
 
 app.listen(PORT, () => {

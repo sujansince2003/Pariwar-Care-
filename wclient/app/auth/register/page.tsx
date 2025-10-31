@@ -35,7 +35,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#F5F6F8] p-4">
       <Card className="max-w-md w-full rounded-2xl shadow-xl border border-gray-200">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-[#2E5C8A]">
+          <CardTitle className="text-3xl font-bold text-blue-600">
             Create Your Account
           </CardTitle>
           <CardDescription className="text-gray-600 mt-2">
@@ -46,7 +46,7 @@ export default function RegisterPage() {
         <CardContent className="mt-4">
           <form onSubmit={handleRegister} className="flex flex-col gap-4">
             <div>
-              <label className="text-gray-700 text-sm font-medium">Full Name</label>
+              <label className="text-gray-700 text-sm font-semibold">Full Name</label>
               <Input
                 name="name"
                 type="text"
@@ -59,7 +59,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-medium">Email</label>
+              <label className="text-gray-700 text-sm font-semibold">Email</label>
               <Input
                 name="email"
                 type="email"
@@ -72,7 +72,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-medium">Password</label>
+              <label className="text-gray-700 text-sm font-semibold">Password</label>
               <Input
                 name="password"
                 type="password"
@@ -85,7 +85,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-medium">
+              <label className="text-gray-700 text-sm font-semibold">
                 Confirm Password
               </label>
               <Input
@@ -108,7 +108,7 @@ export default function RegisterPage() {
             Already have an account?{" "}
             <a
               href="/auth/login"
-              className="text-[#5B9BD5] hover:underline font-medium"
+              className="text-blue-600 hover:underline font-medium"
             >
               Log In
             </a>
