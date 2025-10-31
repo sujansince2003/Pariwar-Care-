@@ -52,11 +52,13 @@ export const addParent = async (req: AuthenticatedRequest, res: Response) => {
             message: 'Parent added successfully',
             data: { parent }
         })
+        return
     } catch (error: any) {
         res.status(400).json({
             success: false,
             message: error.message || 'Failed to add parent'
         })
+        return
     }
 }
 
@@ -127,22 +129,26 @@ export const updateParent = async (req: AuthenticatedRequest, res: Response) => 
             return
         }
 
-        const parent = await prisma.parent.updateMany({
+        const parent = await prisma.parent.findFirst({
             where: {
                 id: req.params.id,
                 children: {
                     some: { id: req.user!.userId }
                 }
-            },
-            data: validatedData.data
+            }
         })
 
-        if (parent.count === 0) {
+        if (!parent) {
             res.json({
                 message: "parent not found"
             })
             return
         }
+
+        await prisma.parent.update({
+            where: { id: req.params.id },
+            data: validatedData.data
+        })
 
         res.status(200).json({
             success: true,
@@ -159,7 +165,7 @@ export const updateParent = async (req: AuthenticatedRequest, res: Response) => 
 // DELETE /parents/:id - Remove parent profile
 export const deleteParent = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const parent = await prisma.parent.deleteMany({
+        const parent = await prisma.parent.findFirst({
             where: {
                 id: req.params.id,
                 children: {
@@ -168,12 +174,16 @@ export const deleteParent = async (req: AuthenticatedRequest, res: Response) => 
             }
         })
 
-        if (parent.count === 0) {
+        if (!parent) {
             res.json({
                 message: "parent not found"
             })
             return
         }
+
+        await prisma.parent.delete({
+            where: { id: req.params.id }
+        })
 
         res.status(200).json({
             success: true,
