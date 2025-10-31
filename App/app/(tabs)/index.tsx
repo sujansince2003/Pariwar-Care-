@@ -57,33 +57,44 @@ export default function HomeTab() {
         </Link>
       </View>
 
-      <View style={styles.menu}>
-        <Text style={styles.menuTitle}>Quick Links</Text>
-        <Link href="/book-appointment" asChild>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text>Book Appointment</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link href="/appointment-status" asChild>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text>Appointment Status</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link href="/report-viewer" asChild>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text>View Latest Report</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link href="/notifications" asChild>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text>Notifications</Text>
-          </TouchableOpacity>
-        </Link>
-        <Link href="/login" asChild>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text>Login / Sign Up (UI)</Text>
-          </TouchableOpacity>
-        </Link>
+      <View style={styles.shortcuts}>
+        <Text style={styles.menuTitle}>Shortcuts</Text>
+        <View style={styles.shortcutsRow}>
+          <Link href="/book-appointment" asChild>
+            <TouchableOpacity style={styles.tile}>
+              <Text style={styles.tileText}>Book</Text>
+              <Text style={styles.tileSub}>Appointment</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/appointment-status" asChild>
+            <TouchableOpacity style={styles.tile}>
+              <Text style={styles.tileText}>Appointments</Text>
+              <Text style={styles.tileSub}>Status</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/report-viewer" asChild>
+            <TouchableOpacity style={styles.tile}>
+              <Text style={styles.tileText}>Reports</Text>
+              <Text style={styles.tileSub}>Latest</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/notifications" asChild>
+            <TouchableOpacity style={styles.tile}>
+              <Text style={styles.tileText}>Alerts</Text>
+              <Text style={styles.tileSub}>Notifications</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/login" asChild>
+            <TouchableOpacity style={styles.tile}>
+              <Text style={styles.tileText}>Account</Text>
+              <Text style={styles.tileSub}>Login</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
       </View>
     </ScrollView>
   )
@@ -126,6 +137,23 @@ const styles = StyleSheet.create({
   buttonOutlineText: { color: "#2f80ed", fontWeight: "600" },
   menu: { marginTop: 8 },
   menuTitle: { fontSize: 14, fontWeight: "700", marginBottom: 8 },
+  /* Shortcuts row */
+  shortcuts: { marginTop: 8 },
+  shortcutsRow: { flexDirection: "row", gap: 10, flexWrap: "wrap" },
+  tile: {
+    width: 100,
+    height: 88,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#eee",
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  tileText: { fontWeight: "700", fontSize: 14 },
+  tileSub: { fontSize: 12, color: "#666", marginTop: 4 },
   menuItem: {
     padding: 12,
     borderRadius: 8,
