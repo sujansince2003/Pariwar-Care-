@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/users'
 import parentRoutes from './routes/parents.routes'
+import visitRoutes from './routes/visits.routes'
 
 import swaggerUi from 'swagger-ui-express'
 import { specs } from './config/swagger'
@@ -57,6 +58,7 @@ app.get("/api/health", (req: Request, res: Response) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/parents', parentRoutes)
+app.use('/api/visits', visitRoutes)
 
 
 app.listen(PORT, () => {
