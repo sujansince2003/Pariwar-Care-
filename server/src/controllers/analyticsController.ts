@@ -1,0 +1,104 @@
+import { Request, Response } from 'express'
+import prisma from '../db/db.config'
+
+interface AuthenticatedRequest extends Request {
+    user?: {
+        userId: string
+        email: string
+        role: string
+    }
+}
+
+export const getParentTrends = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const parentId = req.params.id
+        const period = req.query.period as string || 'weekly'
+
+        const parent = await prisma.parent.findFirst({
+            where: {
+                id: parentId,
+                children: {
+                    some: { id: req.user!.userId }
+                }
+            }
+        })
+
+        if (!parent) {
+            res.json({
+                message: "parent not found or not authorized"
+            })
+            return
+        }
+
+        const visits = await prisma.visit.findMany({
+            where: {
+                parentId,
+                status: 'COMPLETED',
+                vitals: { isNot: null }
+            },
+            include: { vitals: true },
+            orderBy: { completedAt: 'asc' }
+        })
+
+        const trends = aggregateVitals(visits, period)
+
+        res.status(200).json({
+            success: true,
+            message: 'Health trends fetched successfully',
+            data: {
+                parentId,
+                period,
+                vitalsTrend: trends
+            }
+        })
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Failed to fetch health trends'
+        })
+    }
+}
+
+function aggregateVitals(visits: any[], period: string) {
+    const groups = new Map()
+
+    visits.forEach(visit => {
+        if (!visit.completedAt || !visit.vitals) return
+
+        const date = new Date(visit.completedAt)
+        let key: string
+
+        if (period === 'monthly') {
+            key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`
+        } else {
+            const startOfWeek = new Date(date)
+            const day = startOfWeek.getDay()
+            const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1)
+            startOfWeek.setDate(diff)
+            key = startOfWeek.toISOString().split('T')[0]
+        }
+
+        if (!groups.has(key)) groups.set(key, [])
+        groups.get(key).push(visit.vitals)
+    })
+
+    return Array.from(groups.entries()).map(([key, vitals]) => {
+        const result: any = { [period === 'monthly' ? 'monthStart' : 'weekStart']: key }
+        
+        const bps = vitals.filter((v: any) => v.bp).map((v: any) => v.bp)
+        if (bps.length > 0) result.bp = bps[bps.length - 1]
+
+        ['sugar', 'pulse', 'oxygen', 'temperature'].forEach(field => {
+            const values = vitals.filter((v: any) => v[field]).map((v: any) => parseFloat(v[field])).filter((v: number) => !isNaN(v))
+            if (values.length > 0) {
+                result[field] = Math.round((values.reduce((sum, val) => sum + val, 0) / values.length) * 10) / 10
+            }
+        })
+
+        return result
+    }).sort((a, b) => {
+        const dateA = period === 'monthly' ? a.monthStart : a.weekStart
+        const dateB = period === 'monthly' ? b.monthStart : b.weekStart
+        return dateA.localeCompare(dateB)
+    })
+}
