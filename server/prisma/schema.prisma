@@ -10,18 +10,20 @@ datasource db {
 enum Role {
   CHILD
   NURSE
+  MEDICAL_ADMIN
   ADMIN
 }
 
 model User {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  password    String
-  role        Role
-  parents     Parent[] @relation("ChildParents")
-  nurseVisits Visit[]  @relation("NurseVisits")
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+  role           Role
+  parents        Parent[] @relation("ChildParents")
+  nurseVisits    Visit[]  @relation("NurseVisits")
+  approvedVisits Visit[]  @relation("ApprovedBy")
+  createdAt      DateTime @default(now())
 }
 
 model Parent {
@@ -38,18 +40,24 @@ model Parent {
 }
 
 model Visit {
-  id           String      @id @default(cuid())
-  parentId     String
-  nurseId      String?
-  scheduledFor DateTime
-  visitType    VisitType
-  status       VisitStatus @default(PENDING)
-  notes        String?
-  completedAt  DateTime?
-  vitals       Vitals?
-  Parent       Parent      @relation(fields: [parentId], references: [id])
-  Nurse        User?       @relation("NurseVisits", fields: [nurseId], references: [id])
-  createdAt    DateTime    @default(now())
+  id            String      @id @default(cuid())
+  parentId      String
+  nurseId       String?
+  scheduledFor  DateTime
+  visitType     VisitType
+  status        VisitStatus @default(PENDING)
+  notes         String?
+  completedAt   DateTime?
+  vitals        Vitals?
+  Parent        Parent      @relation(fields: [parentId], references: [id])
+  Nurse         User?       @relation("NurseVisits", fields: [nurseId], references: [id])
+  approvedById  String?
+  ApprovedBy    User?       @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvalNote  String?
+  rejectionNote String?
+  approvedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
 }
 
 model Vitals {
@@ -61,6 +69,7 @@ model Vitals {
   oxygen      String?
   temperature String?
   notes       String?
+  medicines   String?
   Visit       Visit    @relation(fields: [visitId], references: [id])
   createdAt   DateTime @default(now())
 }
@@ -69,6 +78,9 @@ enum VisitStatus {
   PENDING
   ASSIGNED
   STARTED
+  WAITING_APPROVAL
+  REVISION_REQUIRED
+  APPROVED
   COMPLETED
 }
 
