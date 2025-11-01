@@ -8,7 +8,7 @@ export interface SignupData {
     name: string
     email: string
     password: string
-    role: 'CHILD' | 'NURSE' | 'ADMIN'
+    role: 'CHILD' | 'NURSE' | 'MEDICAL_ADMIN' | 'ADMIN'
 }
 
 export interface LoginData {
@@ -22,7 +22,7 @@ const signupSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email format'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
-    role: z.enum(["CHILD", "ADMIN", "NURSE"])
+    role: z.enum(["CHILD", "NURSE", "MEDICAL_ADMIN", "ADMIN"])
 })
 
 const loginSchema = z.object({
