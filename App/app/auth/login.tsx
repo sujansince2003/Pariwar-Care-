@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
 import {
   StyleSheet,
   View,
@@ -8,18 +8,60 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-} from 'react-native'
-import { Link, useRouter } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
+  Alert,
+} from "react-native"
+import { Link, useRouter } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
+import axios from "axios"
+import { env } from "@/utils/env"
+import { storage } from "@/utils/storage"
 
 export default function login() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = () => {
-    // TODO: Implement actual authentication
-    router.replace('/(tabs)')
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields")
+      return
+    }
+
+    setLoading(true)
+    try {
+      console.log("Logging in with:", { email })
+      const response = await axios.post(`${env.baseUrl}api/auth/login`, {
+        email,
+        password,
+      })
+
+        console.log("Login Response 1:", response.data.data)
+
+
+      if (response.data.data.token) {
+        // Store the token
+        await storage.setAuthToken(response.data.data.token)
+
+        // Store user data if available
+        if (response.data.data.user) {
+          await storage.setUserData(response.data.data.user)
+        }
+
+        Alert.alert("Success", "Login successful!", [
+          {
+            text: "OK",
+            onPress: () => router.replace("/(tabs)")
+          }
+        ])
+      }
+    } catch (error: any) {
+      console.error("Login Error:", error)
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again."
+      Alert.alert("Error", errorMessage)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -72,10 +114,13 @@ export default function login() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
               onPress={handleLogin}
+              disabled={loading}
             >
-              <Text style={styles.primaryButtonText}>Sign In</Text>
+              <Text style={styles.primaryButtonText}>
+                {loading ? "Signing In..." : "Sign In"}
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.divider}>
@@ -102,7 +147,7 @@ export default function login() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
@@ -110,97 +155,101 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
     marginBottom: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 32,
-    fontWeight: '800',
-    color: '#111',
+    fontWeight: "800",
+    color: "#111",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
   form: {
-    width: '100%',
+    width: "100%",
   },
   inputGroup: {
     marginBottom: 20,
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f7f8fb',
+    backgroundColor: "#f7f8fb",
     borderWidth: 1,
-    borderColor: '#e1e4e8',
+    borderColor: "#e1e4e8",
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#111',
+    color: "#111",
   },
   forgotPassword: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 24,
   },
   forgotPasswordText: {
-    color: '#2f80ed',
+    color: "#2f80ed",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   primaryButton: {
-    backgroundColor: '#2f80ed',
+    backgroundColor: "#2f80ed",
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#2f80ed',
+    alignItems: "center",
+    shadowColor: "#2f80ed",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
   },
+  primaryButtonDisabled: {
+    backgroundColor: "#a0c4f0",
+    opacity: 0.6,
+  },
   primaryButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 32,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e1e4e8',
+    backgroundColor: "#e1e4e8",
   },
   dividerText: {
     marginHorizontal: 16,
-    color: '#999',
+    color: "#999",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   registerSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   registerText: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
   },
   registerLink: {
     fontSize: 15,
-    color: '#2f80ed',
-    fontWeight: '700',
+    color: "#2f80ed",
+    fontWeight: "700",
   },
 })

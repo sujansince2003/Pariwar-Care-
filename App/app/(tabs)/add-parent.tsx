@@ -10,6 +10,10 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useRouter } from "expo-router"
+import axios from "axios"
+
+import { env } from "@/utils/env"
+import { storage } from "@/utils/storage"
 
 export default function AddParent() {
   const router = useRouter()
@@ -36,16 +40,59 @@ export default function AddParent() {
   const [currentMedications, setCurrentMedications] = useState("")
   const [allergies, setAllergies] = useState("")
 
-  const handleSubmit = () => {
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async () => {
     if (!name || !age || !phone || !address) {
       Alert.alert("Error", "Please fill in all required fields")
       return
     }
 
-    // TODO: Implement actual save functionality
-    Alert.alert("Success", "Parent profile added successfully!", [
-      { text: "OK", onPress: () => router.back() }
-    ])
+    setLoading(true)
+    try {
+      // Get the auth token
+      const token = await storage.getAuthToken()
+
+      if (!token) {
+        Alert.alert("Error", "You must be logged in to add a parent. Please login first.")
+        router.replace("/auth/login")
+        return
+      }
+
+      // Combine address fields
+      const fullAddress = `${address}${city ? ', ' + city : ''}${pincode ? ', ' + pincode : ''}`
+
+      const response = await axios.post(
+        `${env.baseUrl}api/parents`,
+        {
+          name,
+          age: parseInt(age),
+          gender,
+          address: fullAddress,
+          diseases: medicalHistory || "None",
+          medications: currentMedications || "None",
+          emergencyContact: emergencyPhone || phone
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      console.log("Add Parent Response: sucess", response.data)
+      console.log("Add Parent Response:", response)
+
+      Alert.alert("Success", "Parent profile added successfully!", [
+        { text: "OK", onPress: () => router.back() }
+      ])
+    } catch (error: any) {
+      console.error("Add Parent Error:", error)
+      const errorMessage = error.response?.data?.message || "Failed to add parent. Please try again."
+      Alert.alert("Error", errorMessage)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -271,8 +318,14 @@ export default function AddParent() {
           />
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Save Parent Profile</Text>
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.submitButtonText}>
+            {loading ? "Saving..." : "Save Parent Profile"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -397,6 +450,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+  },
+  submitButtonDisabled: {
+    backgroundColor: "#a0c4f0",
+    opacity: 0.6,
   },
   submitButtonText: {
     color: "#fff",

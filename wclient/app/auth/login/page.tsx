@@ -1,19 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useAuth } from "@/lib/context/AuthContext";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { login, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/lab/dashboard");
+
+    // Basic validation
+    if (!email || !password) {
+      return;
+    }
+
+    try {
+      await login(email, password);
+      // Navigation is handled in the AuthContext after successful login
+    } catch (error) {
+      // Error handling is done in AuthContext with toast notifications
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -58,8 +70,8 @@ export default function LoginPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full mt-2">
-              Sign In
+            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
 
            
