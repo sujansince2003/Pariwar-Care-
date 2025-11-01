@@ -10,6 +10,8 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
+import MapView from "react-native-maps"
+
 
 export default function BookAppointment() {
   // Mock patient data - in real app, fetch from state/API
@@ -61,10 +63,15 @@ export default function BookAppointment() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Book Appointment</Text>
-        <Text style={styles.headerSubtitle}>Schedule a home visit for your parents</Text>
+        <Text style={styles.headerSubtitle}>
+          Schedule a home visit for your parents
+        </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 1. Select Patient */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Select Patient</Text>
@@ -85,7 +92,9 @@ export default function BookAppointment() {
                 />
                 <View style={styles.patientDetails}>
                   <Text style={styles.patientName}>{patient.name}</Text>
-                  <Text style={styles.patientAge}>{patient.age} yrs • {patient.gender}</Text>
+                  <Text style={styles.patientAge}>
+                    {patient.age} yrs • {patient.gender}
+                  </Text>
                 </View>
               </View>
               {selectedPatient === patient.id && (
@@ -148,7 +157,11 @@ export default function BookAppointment() {
                   onPress={() => setTimeSlot(slot)}
                 >
                   <Text
-                    style={timeSlot === slot ? styles.timeSlotTextActive : styles.timeSlotText}
+                    style={
+                      timeSlot === slot
+                        ? styles.timeSlotTextActive
+                        : styles.timeSlotText
+                    }
                   >
                     {slot}
                   </Text>
@@ -187,6 +200,9 @@ export default function BookAppointment() {
         {/* 4. Location */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>4. Location</Text>
+
+          <MapView style={styles.map} />
+
           <View style={styles.locationCard}>
             <Ionicons name="location" size={20} color="#2f80ed" />
             <Text style={styles.locationText}>{location}</Text>
@@ -212,7 +228,9 @@ export default function BookAppointment() {
 
         {/* 6. Nurse Preference */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>6. Nurse Preference (Optional)</Text>
+          <Text style={styles.sectionTitle}>
+            6. Nurse Preference (Optional)
+          </Text>
           <View style={styles.nursePreference}>
             {[
               { value: "any", label: "Any" },
@@ -255,7 +273,9 @@ export default function BookAppointment() {
             </View>
             <View style={styles.paymentRow}>
               <Text style={styles.paymentLabel}>Discount:</Text>
-              <Text style={[styles.paymentValue, { color: "#4caf50" }]}>- रू 100</Text>
+              <Text style={[styles.paymentValue, { color: "#4caf50" }]}>
+                - रू 100
+              </Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.paymentRow}>
@@ -628,5 +648,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
+  },
+  map: {
+    width: "100%",
+    height: 150,
   },
 })

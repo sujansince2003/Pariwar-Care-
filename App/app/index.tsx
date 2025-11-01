@@ -24,12 +24,17 @@ const Index = () => {
 
           <View style={styles.textContainer}>
             <Text style={styles.title}>SewaCycle</Text>
-            <Text style={styles.slogan}>Your parents' health, in your hands</Text>
+            <Text style={styles.slogan}>
+              Your parents' health, in your hands
+            </Text>
           </View>
         </View>
 
         <View style={styles.bottomSection}>
-          <TouchableOpacity style={styles.getStartedButton} onPress={handleGetStarted}>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={handleGetStarted}
+          >
             <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>
 
