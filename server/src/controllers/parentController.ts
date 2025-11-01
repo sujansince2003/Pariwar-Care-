@@ -17,7 +17,7 @@ const parentSchema = z.object({
     address: z.string().min(5, 'Address must be at least 5 characters'),
     diseases: z.string().optional(),
     medications: z.string().optional(),
-    emergencyContact: z.string().min(10, 'Emergency contact is required')
+    emergencyContact: z.string().min(10, 'Emergency contact is required of length 10')
 })
 
 
@@ -26,11 +26,12 @@ export const addParent = async (req: AuthenticatedRequest, res: Response) => {
         const validatedData = parentSchema.safeParse(req.body)
         if (!validatedData.success) {
             res.json({
-                message: "invalid data"
+                message: "invalid data",
+                error: validatedData.error.format()
             })
             return
         }
-        const {name,age,gender,address,diseases,emergencyContact,medications}= validatedData.data
+        const { name, age, gender, address, diseases, emergencyContact, medications } = validatedData.data
 
         const parent = await prisma.parent.create({
             data: {

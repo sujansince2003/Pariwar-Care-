@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-type Role = 'CHILD' | 'NURSE' | 'ADMIN'
+type Role = 'CHILD' | 'NURSE' | 'MEDICAL_ADMIN' | 'ADMIN'
 
 interface AuthRequest extends Request {
     user?: {
@@ -34,3 +34,4 @@ export const requireRole = (allowedRoles: Role[]) => {
 export const requireAdmin = requireRole(['ADMIN'])
 export const requireNurse = requireRole(['NURSE', 'ADMIN'])
 export const requireChild = requireRole(['CHILD', 'ADMIN'])
+export const requireMedicalAdmin = requireRole(['MEDICAL_ADMIN', 'ADMIN'])

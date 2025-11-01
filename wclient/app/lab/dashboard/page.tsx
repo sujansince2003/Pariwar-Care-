@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import Link from "next/link";
+"use client"
+import React from "react"
+import Link from "next/link"
 import {
   BarChart,
   Bar,
@@ -11,16 +11,16 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from "recharts"
 
 type TestItem = {
-  id: string;
-  patient: string;
-  testType: string;
-  scheduledFor: string;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "REPORTED";
-  img: string;
-};
+  id: string
+  patient: string
+  testType: string
+  scheduledFor: string
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "REPORTED"
+  img: string
+}
 
 const sampleTests: TestItem[] = [
   {
@@ -55,7 +55,7 @@ const sampleTests: TestItem[] = [
     status: "REPORTED",
     img: "https://randomuser.me/api/portraits/men/18.jpg",
   },
-];
+]
 
 function StatusPill({ status }: { status: TestItem["status"] }) {
   const map: Record<TestItem["status"], string> = {
@@ -63,14 +63,14 @@ function StatusPill({ status }: { status: TestItem["status"] }) {
     IN_PROGRESS: "bg-indigo-100 text-indigo-800",
     COMPLETED: "bg-green-100 text-green-800",
     REPORTED: "bg-blue-100 text-blue-800",
-  };
+  }
   return (
     <span
       className={`px-2 py-0.5 rounded-full text-xs font-medium ${map[status]}`}
     >
       {status.replace("_", " ")}
     </span>
-  );
+  )
 }
 
 // Dummy data for charts
@@ -82,20 +82,22 @@ const barData = [
   { name: "Fri", tests: 10 },
   { name: "Sat", tests: 15 },
   { name: "Sun", tests: 8 },
-];
+]
 
 const pieData = [
   { name: "Pending", value: 4, color: "#FACC15" },
   { name: "In Progress", value: 3, color: "#6366F1" },
   { name: "Completed", value: 5, color: "#22C55E" },
   { name: "Reported", value: 6, color: "#3B82F6" },
-];
+]
 
 export default function LabDashboardPage() {
-  const pending = sampleTests.filter((t) => t.status === "PENDING").length;
-  const inProgress = sampleTests.filter((t) => t.status === "IN_PROGRESS").length;
-  const completed = sampleTests.filter((t) => t.status === "COMPLETED").length;
-  const reported = sampleTests.filter((t) => t.status === "REPORTED").length;
+  const pending = sampleTests.filter((t) => t.status === "PENDING").length
+  const inProgress = sampleTests.filter(
+    (t) => t.status === "IN_PROGRESS"
+  ).length
+  const completed = sampleTests.filter((t) => t.status === "COMPLETED").length
+  const reported = sampleTests.filter((t) => t.status === "REPORTED").length
 
   return (
     <main className="min-h-screen bg-[#F5F7FB] px-6 py-8">
@@ -121,10 +123,26 @@ export default function LabDashboardPage() {
       {/* Stats Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {[
-          { label: "Pending", count: pending, color: "border-yellow-300 bg-yellow-50" },
-          { label: "In Progress", count: inProgress, color: "border-indigo-300 bg-indigo-50" },
-          { label: "Completed", count: completed, color: "border-green-300 bg-green-50" },
-          { label: "Reports Ready", count: reported, color: "border-blue-300 bg-blue-50" },
+          {
+            label: "Pending",
+            count: pending,
+            color: "border-yellow-300 bg-yellow-50",
+          },
+          {
+            label: "In Progress",
+            count: inProgress,
+            color: "border-indigo-300 bg-indigo-50",
+          },
+          {
+            label: "Completed",
+            count: completed,
+            color: "border-green-300 bg-green-50",
+          },
+          {
+            label: "Reports Ready",
+            count: reported,
+            color: "border-blue-300 bg-blue-50",
+          },
         ].map((item) => (
           <div
             key={item.label}
@@ -140,7 +158,9 @@ export default function LabDashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Bar Chart */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-blue-600 mb-4">Weekly Test Overview</h2>
+          <h2 className="text-lg font-semibold text-blue-600 mb-4">
+            Weekly Test Overview
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={barData}>
               <XAxis dataKey="name" stroke="#9CA3AF" />
@@ -153,7 +173,9 @@ export default function LabDashboardPage() {
 
         {/* Pie Chart */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-blue-600 mb-4">Report Status Summary</h2>
+          <h2 className="text-lg font-semibold text-blue-600 mb-4">
+            Report Status Summary
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -176,8 +198,13 @@ export default function LabDashboardPage() {
       <section className="grid grid-cols-2 lg:grid-cols-1 gap-8 ">
         <div className="lg:col-span-3 bg-white rounded-xl border border-gray-200 shadow-sm p-6 w-3/4 mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-blue-600">View Clients</h2>
-            <Link href="/lab/clients" className="text-sm text-blue-600 hover:underline">
+            <h2 className="text-lg font-semibold text-blue-600">
+              View Clients
+            </h2>
+            <Link
+              href="/lab/clients"
+              className="text-sm text-blue-600 hover:underline"
+            >
               View all
             </Link>
           </div>
@@ -197,9 +224,13 @@ export default function LabDashboardPage() {
                   <div>
                     <div className="font-medium text-gray-800">
                       {t.patient}{" "}
-                      <span className="text-gray-500 text-sm">— {t.testType}</span>
+                      <span className="text-gray-500 text-sm">
+                        — {t.testType}
+                      </span>
                     </div>
-                    <div className="text-xs text-gray-400">{t.scheduledFor}</div>
+                    <div className="text-xs text-gray-400">
+                      {t.scheduledFor}
+                    </div>
                   </div>
                 </div>
 
@@ -216,9 +247,7 @@ export default function LabDashboardPage() {
             ))}
           </ul>
         </div>
-
-        
       </section>
     </main>
-  );
+  )
 }
