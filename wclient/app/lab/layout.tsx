@@ -9,9 +9,9 @@ export const metadata = {
 export default function LabLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen  text-gray-900">
-      <header className="bg-white p-2">
+      <header className="">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/lab" className="text-lg font-semibold text-blue-700">
+          <Link href="/lab" className="text-lg font-semibold text-blue-700 ">
           SewaCycle
           </Link>
 

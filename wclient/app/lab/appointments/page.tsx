@@ -14,9 +14,7 @@ export default function AppointmentsPage() {
   return (
     <main className="min-h-screen bg-[#F5F6F8] p-6">
       <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-        <h1 className="text-3xl font-bold text-[#2E5C8A]">New Appointments</h1>
-        <div className="mt-4 md:mt-0 flex gap-2">
-        </div>
+        <h1 className="text-3xl px-45 font-bold text-blue-600">New Appointments</h1>
       </header>
 
       <ul className="space-y-4 w-3/4 mx-auto">
