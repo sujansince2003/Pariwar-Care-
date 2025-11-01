@@ -99,6 +99,10 @@ export const getChildVisits = async (req: AuthenticatedRequest, res: Response) =
                     children: {
                         some: { id: req.user!.userId }
                     }
+                },
+                // Hide WAITING_APPROVAL and REVISION_REQUIRED from children
+                status: {
+                    notIn: ['WAITING_APPROVAL', 'REVISION_REQUIRED']
                 }
             },
             include: {
@@ -112,6 +116,14 @@ export const getChildVisits = async (req: AuthenticatedRequest, res: Response) =
                     select: {
                         name: true,
                         email: true
+                    }
+                },
+                // Only include vitals for APPROVED visits
+                vitals: {
+                    where: {
+                        Visit: {
+                            status: 'APPROVED'
+                        }
                     }
                 }
             },
