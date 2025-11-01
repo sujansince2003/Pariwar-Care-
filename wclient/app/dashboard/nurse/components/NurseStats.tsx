@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { theme } from "@/app/styles/theme"
 
 type StatCardProps = {
   title: string
