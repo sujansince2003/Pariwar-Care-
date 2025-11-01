@@ -26,7 +26,8 @@ const vitalsSchema = z.object({
     pulse: z.string().optional(),
     oxygen: z.string().optional(),
     temperature: z.string().optional(),
-    notes: z.string().optional()
+    notes: z.string().optional(),
+    medicines: z.string().optional()
 })
 
 // POST /visits - Schedule appointment
@@ -319,43 +320,71 @@ export const submitVitals = async (req: AuthenticatedRequest, res: Response) => 
         const validatedData = vitalsSchema.safeParse(req.body)
         
         if (!validatedData.success) {
-            res.json({
-                message: "invalid data"
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid vitals payload',
+                errors: validatedData.error.format()
             })
-            return
         }
 
         const visit = await prisma.visit.findFirst({
             where: {
                 id: visitId,
-                nurseId: req.user!.userId,
-                status: 'STARTED'
-            }
+                nurseId: req.user!.userId
+            },
+            include: { Parent: true }
         })
 
         if (!visit) {
-            res.json({
-                message: "visit not found or not started"
+            return res.status(404).json({
+                success: false,
+                message: 'Visit not found or not assigned to you'
             })
-            return
+        }
+
+        if (visit.status !== 'STARTED' && visit.status !== 'ASSIGNED') {
+            return res.status(400).json({
+                success: false,
+                message: `Visit must be STARTED to submit vitals. Current status: ${visit.status}`
+            })
         }
 
         const vitals = await prisma.vitals.upsert({
             where: { visitId },
-            update: validatedData.data,
             create: {
                 visitId,
+                ...validatedData.data
+            },
+            update: {
                 ...validatedData.data
             }
         })
 
-        res.status(200).json({
+        const updatedVisit = await prisma.visit.update({
+            where: { id: visitId },
+            data: {
+                status: 'WAITING_APPROVAL',
+                notes: validatedData.data.notes ?? visit.notes
+            },
+            include: {
+                Parent: {
+                    select: { name: true, address: true, emergencyContact: true }
+                },
+                Nurse: {
+                    select: { id: true, name: true, email: true }
+                },
+                vitals: true
+            }
+        })
+
+        return res.status(200).json({
             success: true,
-            message: 'Vitals submitted successfully',
-            data: { vitals }
+            message: 'Vitals submitted and sent for medical review',
+            data: { visit: updatedVisit, vitals }
         })
     } catch (error: any) {
-        res.status(400).json({
+        console.error(error)
+        return res.status(500).json({
             success: false,
             message: error.message || 'Failed to submit vitals'
         })
