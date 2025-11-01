@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { theme } from "@/app/styles/theme"
 
 type StatCardProps = {
   title: string
@@ -17,11 +18,11 @@ const StatCard = ({
 }: StatCardProps) => {
   return (
     <div
-      className={`p-6 bg-[var(--color-bg-primary)] rounded-lg shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow ${className}`}
+      className={`p-6 ${theme.card.base} ${theme.card.hover} ${className}`}
     >
-      <h3 className="text-[var(--color-text-secondary)] text-sm font-medium mb-2">{title}</h3>
-      <p className="text-3xl font-semibold mb-1 text-[var(--color-text-primary)]">{value}</p>
-      {description && <p className="text-[var(--color-text-secondary)] text-sm">{description}</p>}
+      <h3 className={`${theme.text.small} font-medium mb-2`}>{title}</h3>
+      <p className={`text-3xl ${theme.text.title} mb-1`}>{value}</p>
+      {description && <p className={theme.text.small}>{description}</p>}
     </div>
   )
 }
