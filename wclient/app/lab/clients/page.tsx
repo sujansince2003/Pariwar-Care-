@@ -1,161 +1,179 @@
 "use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
-import { Loader2, Filter } from "lucide-react";
+import { useParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ClipboardPlus, FileText } from "lucide-react";
 
-interface Client {
+interface ClientProfile {
   id: string;
   name: string;
   age: number;
   gender: string;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "REPORTED";
+  bloodPressure: string;
+  location: string;
+  weight: string;
+  height: string;
   testType: string;
   image: string;
+  report?: {
+    reportId: string;
+    summary: string;
+    findings: string;
+    date: string;
+  };
 }
 
-export default function ClientsPage() {
-  const [filter, setFilter] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+export default function ClientProfilePage() {
+  const { id } = useParams();
+  const [showReport, setShowReport] = useState(false);
 
-  // 🧠 Dummy clients data
-  const clients: Client[] = [
+  // Dummy Data
+  const clients: ClientProfile[] = [
     {
       id: "1",
       name: "Ram Thapa",
       age: 32,
       gender: "Male",
-      status: "PENDING",
+      bloodPressure: "120/80 mmHg",
+      location: "Kathmandu",
+      weight: "72 kg",
+      height: "175 cm",
       testType: "Blood Sugar",
       image: "https://randomuser.me/api/portraits/men/45.jpg",
+      report: {
+        reportId: "RPT001",
+        summary: "Slightly elevated glucose levels.",
+        findings:
+          "Patient may be pre-diabetic. Recommend dietary control and follow-up test after 3 months.",
+        date: "2025-10-31",
+      },
     },
     {
       id: "2",
       name: "Sita Sharma",
       age: 29,
       gender: "Female",
-      status: "IN_PROGRESS",
+      bloodPressure: "118/75 mmHg",
+      location: "Pokhara",
+      weight: "60 kg",
+      height: "168 cm",
       testType: "CBC",
       image: "https://randomuser.me/api/portraits/women/65.jpg",
     },
-    {
-      id: "3",
-      name: "Maya KC",
-      age: 24,
-      gender: "Female",
-      status: "COMPLETED",
-      testType: "Lipid Panel",
-      image: "https://randomuser.me/api/portraits/women/22.jpg",
-    },
-    {
-      id: "4",
-      name: "Hari Adhikari",
-      age: 40,
-      gender: "Male",
-      status: "REPORTED",
-      testType: "Urinalysis",
-      image: "https://randomuser.me/api/portraits/men/18.jpg",
-    },
-    {
-      id: "5",
-      name: "Kiran Rana",
-      age: 27,
-      gender: "Male",
-      status: "PENDING",
-      testType: "Liver Function Test",
-      image: "https://randomuser.me/api/portraits/men/52.jpg",
-    },
-    {
-      id: "6",
-      name: "Bimala Karki",
-      age: 35,
-      gender: "Female",
-      status: "IN_PROGRESS",
-      testType: "Thyroid Panel",
-      image: "https://randomuser.me/api/portraits/women/55.jpg",
-    },
   ];
 
-  const filteredClients = filter
-    ? clients.filter((c) => c.status === filter)
-    : clients;
+  const client = clients.find((d) => d.id === id);
 
-  const toggleFilter = () => {
-    if (filter === null) setFilter("PENDING");
-    else setFilter(null);
-  };
+  if (!client) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        Client not found.
+      </div>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-[#F5F7FB] p-6">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-blue-600">Clients</h1>
-          <p className="text-gray-500 text-sm">
-            View and manage all patients and their reports.
-          </p>
+    <main className="min-h-screen bg-[#F5F7FB] py-10 px-4 flex justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="max-w-3xl w-full bg-white rounded-2xl shadow-lg border border-gray-200 p-8"
+      >
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+          <motion.img
+            src={client.image}
+            alt={client.name}
+            className="w-28 h-28 rounded-full border-4 border-blue-100 shadow-md object-cover"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 100 }}
+          />
+          <div className="text-center sm:text-left">
+            <h1 className="text-3xl font-semibold text-blue-700">{client.name}</h1>
+            <p className="text-sm text-gray-500 mt-1">{client.testType}</p>
+            <p className="text-xs text-gray-400 mt-1">Client ID: {client.id}</p>
+          </div>
         </div>
 
-        {/* Filter Button */}
-        <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <button
-            onClick={toggleFilter}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 transition ${
-              filter
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 hover:bg-blue-50"
-            }`}
+        {/* Animated Details Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-2 sm:grid-cols-3 gap-5 text-sm mb-8"
+        >
+          {[
+            { label: "Age", value: client.age },
+            { label: "Gender", value: client.gender },
+            { label: "Blood Pressure", value: client.bloodPressure },
+            { label: "Weight", value: client.weight },
+            { label: "Height", value: client.height },
+            { label: "Location", value: client.location },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="bg-blue-50 rounded-xl p-3 text-center hover:shadow-sm transition"
+            >
+              <p className="text-gray-500 text-xs">{item.label}</p>
+              <p className="text-blue-700 font-medium">{item.value}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Buttons */}
+        <div className="flex flex-wrap gap-4 mb-6">
+          <Link
+            href="/lab/makereport"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-all hover:scale-105"
           >
-            <Filter size={16} />
-            {filter ? "Clear Filter" : "Filter Pending"}
-          </button>
-        </div>
-      </header>
+            <ClipboardPlus size={18} />
+            Make Report
+          </Link>
 
-      {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="animate-spin text-blue-600 w-8 h-8" />
-        </div>
-      ) : (
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredClients.length > 0 ? (
-            filteredClients.map((client) => (
-              <Link
-                key={client.id}
-                href={`/clients/${client.id}`}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:border-blue-600 hover:shadow-md transition p-5 flex items-center gap-4"
-              >
-                <img
-                  src={client.image}
-                  alt={client.name}
-                  className="w-12 h-12 rounded-full object-cover border"
-                />
-                <div>
-                  <h3 className="font-semibold text-gray-800">{client.name}</h3>
-                  <p className="text-sm text-gray-500">{client.testType}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        client.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : client.status === "IN_PROGRESS"
-                          ? "bg-indigo-100 text-indigo-800"
-                          : client.status === "COMPLETED"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {client.status}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))
-          ) : (
-            <p className="text-gray-500 text-center col-span-full">
-              No clients found.
-            </p>
+          {client.report && (
+            <button
+              onClick={() => setShowReport(!showReport)}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-white text-blue-600 border border-blue-500 hover:bg-blue-50 transition-all hover:scale-105"
+            >
+              <FileText size={18} />
+              {showReport ? "Hide Report" : "View Report"}
+            </button>
           )}
-        </section>
-      )}
+        </div>
+
+        {/* Animated Report Section */}
+        <AnimatePresence>
+          {showReport && client.report && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="border-t border-gray-200 pt-4 mt-4"
+            >
+              <h2 className="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                <FileText size={18} />
+                Report Summary
+              </h2>
+              <div className="space-y-2 text-sm text-gray-700">
+                <p>
+                  <strong>Date:</strong> {client.report.date}
+                </p>
+                <p>
+                  <strong>Summary:</strong> {client.report.summary}
+                </p>
+                <p>
+                  <strong>Findings:</strong> {client.report.findings}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </main>
   );
 }
