@@ -23,7 +23,7 @@ const Index = () => {
           </View>
 
           <View style={styles.textContainer}>
-            <Text style={styles.title}>SewaCycle</Text>
+            <Text style={styles.title}>PariwarCare</Text>
             <Text style={styles.slogan}>
               Your parents' health, in your hands
             </Text>

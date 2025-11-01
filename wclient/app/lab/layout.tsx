@@ -2,8 +2,8 @@ import React from 'react'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Sewa — Laboratory',
-  description: 'Laboratory workspace for SewaCycle',
+  title: "Sewa — Laboratory",
+  description: "Laboratory workspace for PariwarCare",
 }
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
@@ -12,20 +12,21 @@ export default function LabLayout({ children }: { children: React.ReactNode }) {
       <header className="">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/lab" className="text-lg font-semibold text-blue-700 ">
-          SewaCycle
+            PariwarCare
           </Link>
 
           <nav className="flex items-center gap-4">
-            <Link href="/auth/login" className="inline-flex items-center px-4 py-2 rounded-md bg-white text-blue-600 border border-blue-600 shadow-sm hover:bg-blue-50 transitio">
+            <Link
+              href="/auth/login"
+              className="inline-flex items-center px-4 py-2 rounded-md bg-white text-blue-600 border border-blue-600 shadow-sm hover:bg-blue-50 transitio"
+            >
               Sign out
             </Link>
           </nav>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        {children}
-      </main>
+      <main className="container mx-auto px-4 py-6">{children}</main>
 
       <footer className="border-t bg-white mt-auto">
         <div className="container mx-auto px-4 py-4">
@@ -34,9 +35,15 @@ export default function LabLayout({ children }: { children: React.ReactNode }) {
               © {new Date().getFullYear()} Sewa Laboratory Services
             </span>
             <div className="flex gap-4 text-sm text-gray-500">
-              <Link href="/lab/help" className="hover:text-blue-600">Help</Link>
-              <Link href="/lab/contact" className="hover:text-blue-600">Contact</Link>
-              <Link href="/lab/privacy" className="hover:text-blue-600">Privacy</Link>
+              <Link href="/lab/help" className="hover:text-blue-600">
+                Help
+              </Link>
+              <Link href="/lab/contact" className="hover:text-blue-600">
+                Contact
+              </Link>
+              <Link href="/lab/privacy" className="hover:text-blue-600">
+                Privacy
+              </Link>
             </div>
           </div>
         </div>

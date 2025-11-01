@@ -60,14 +60,16 @@ export default function RegisterPage() {
             Create Your Account
           </CardTitle>
           <CardDescription className="text-gray-600 mt-2">
-            Join SewaCycle to monitor your loved ones’ health easily
+            Join PariwarCare to monitor your loved ones’ health easily
           </CardDescription>
         </CardHeader>
 
         <CardContent className="mt-4">
           <form onSubmit={handleRegister} className="flex flex-col gap-4">
             <div>
-              <label className="text-gray-700 text-sm font-semibold">Full Name</label>
+              <label className="text-gray-700 text-sm font-semibold">
+                Full Name
+              </label>
               <Input
                 name="name"
                 type="text"
@@ -80,7 +82,9 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-semibold">Email</label>
+              <label className="text-gray-700 text-sm font-semibold">
+                Email
+              </label>
               <Input
                 name="email"
                 type="email"
@@ -93,7 +97,9 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-semibold">Role</label>
+              <label className="text-gray-700 text-sm font-semibold">
+                Role
+              </label>
               <select
                 name="role"
                 value={form.role}
@@ -108,7 +114,9 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-gray-700 text-sm font-semibold">Password</label>
+              <label className="text-gray-700 text-sm font-semibold">
+                Password
+              </label>
               <Input
                 name="password"
                 type="password"
@@ -152,5 +160,5 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

@@ -77,7 +77,7 @@ export default function login() {
           <View style={styles.header}>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>
-              Sign in to continue to SewaCycle
+              Sign in to continue to PariwarCare
             </Text>
           </View>
 
@@ -114,7 +114,10 @@ export default function login() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+              style={[
+                styles.primaryButton,
+                loading && styles.primaryButtonDisabled,
+              ]}
               onPress={handleLogin}
               disabled={loading}
             >

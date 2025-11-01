@@ -15,7 +15,7 @@ export default function HomeTab() {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text style={styles.h1}>Dashboard</Text>
-          <Text style={styles.headerSubtitle}>Welcome back to SewaCycle</Text>
+          <Text style={styles.headerSubtitle}>Welcome back to PariwarCare</Text>
         </View>
 
         <View style={styles.card}>

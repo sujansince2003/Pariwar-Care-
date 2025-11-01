@@ -82,7 +82,7 @@ export default function RegisterScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
         <ScrollView
@@ -91,7 +91,7 @@ export default function RegisterScreen() {
         >
           <View style={styles.header}>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join SewaCycle to get started</Text>
+            <Text style={styles.subtitle}>Join PariwarCare to get started</Text>
           </View>
 
           <View style={styles.form}>
@@ -160,7 +160,10 @@ export default function RegisterScreen() {
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+              style={[
+                styles.primaryButton,
+                loading && styles.primaryButtonDisabled,
+              ]}
               onPress={handleRegister}
               disabled={loading}
             >
@@ -171,8 +174,8 @@ export default function RegisterScreen() {
 
             <View style={styles.termsSection}>
               <Text style={styles.termsText}>
-                By signing up, you agree to our{' '}
-                <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
+                By signing up, you agree to our{" "}
+                <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
                 <Text style={styles.termsLink}>Privacy Policy</Text>
               </Text>
             </View>

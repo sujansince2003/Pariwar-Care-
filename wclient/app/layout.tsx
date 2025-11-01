@@ -4,9 +4,9 @@ import { AuthProvider } from "@/lib/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
-  title: "SewaCycle",
+  title: "PariwarCare",
   description: "Care your parents",
-};
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
