@@ -84,14 +84,19 @@ function aggregateVitals(visits: any[], period: string) {
 
     return Array.from(groups.entries()).map(([key, vitals]) => {
         const result: any = { [period === 'monthly' ? 'monthStart' : 'weekStart']: key }
-        
+
         const bps = vitals.filter((v: any) => v.bp).map((v: any) => v.bp)
         if (bps.length > 0) result.bp = bps[bps.length - 1]
 
-        ['sugar', 'pulse', 'oxygen', 'temperature'].forEach(field => {
-            const values = vitals.filter((v: any) => v[field]).map((v: any) => parseFloat(v[field])).filter((v: number) => !isNaN(v))
+        const fields = ['sugar', 'pulse', 'oxygen', 'temperature']
+        fields.forEach((field: string) => {
+            const filteredVitals = vitals.filter((v: any) => v[field])
+            const parsedValues = filteredVitals.map((v: any) => parseFloat(v[field]))
+            const values = parsedValues.filter((v: number) => !isNaN(v))
             if (values.length > 0) {
-                result[field] = Math.round((values.reduce((sum, val) => sum + val, 0) / values.length) * 10) / 10
+                const sum = values.reduce((acc: number, val: number) => acc + val, 0)
+                const average = sum / values.length
+                result[field] = Math.round(average * 10) / 10
             }
         })
 
