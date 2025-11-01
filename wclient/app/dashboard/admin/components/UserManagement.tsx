@@ -76,107 +76,121 @@ export const UserManagement = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      {/* Filters */}
-      <div className="p-4 border-b border-gray-200 flex flex-wrap gap-4">
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 min-w-[200px] px-3 py-2 border rounded-md"
-        />
-        <select
-          value={selectedRole}
-          onChange={(e) =>
-            setSelectedRole(e.target.value as User["role"] | "All")
-          }
-          className="px-3 py-2 border rounded-md"
-        >
-          <option value="All">All Roles</option>
-          <option value="Patient">Patient</option>
-          <option value="Nurse">Nurse</option>
-          <option value="Medical Admin">Medical Admin</option>
-          <option value="Child">Child</option>
-          <option value="Admin">Admin</option>
-        </select>
-      </div>
+    <div className="relative">
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg" />
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Filters */}
+        <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-white/50">
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[250px] relative">
+              <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+            <select
+              value={selectedRole}
+              onChange={(e) =>
+                setSelectedRole(e.target.value as User["role"] | "All")
+              }
+              className="px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="All">All Roles</option>
+              <option value="Patient">Patient</option>
+              <option value="Nurse">Nurse</option>
+              <option value="Medical Admin">Medical Admin</option>
+              <option value="Child">Child</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+        </div>
 
-      {/* User List */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Email
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Role
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Last Active
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user) => (
-              <tr key={user.id} className="border-t border-gray-200">
-                <td className="px-4 py-3">{user.name}</td>
-                <td className="px-4 py-3">{user.email}</td>
-                <td className="px-4 py-3">
-                  <select
-                    value={user.role}
-                    onChange={(e) =>
-                      handleRoleChange(user.id, e.target.value as User["role"])
-                    }
-                    className="px-2 py-1 border rounded-md text-sm"
-                  >
-                    <option value="Patient">Patient</option>
-                    <option value="Nurse">Nurse</option>
-                    <option value="Medical Admin">Medical Admin</option>
-                    <option value="Child">Child</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      user.status === "Active"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {user.lastActive}
-                </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => handleStatusToggle(user.id)}
-                    className={`px-3 py-1 rounded-md text-sm ${
-                      user.status === "Active"
-                        ? "bg-red-100 text-red-800 hover:bg-red-200"
-                        : "bg-green-100 text-green-800 hover:bg-green-200"
-                    }`}
-                  >
-                    {user.status === "Active" ? "Suspend" : "Activate"}
-                  </button>
-                </td>
+        {/* User List */}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50/50 backdrop-blur-sm">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Name
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Role
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Last Active
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200/50">
+              {filteredUsers.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-gray-900">{user.name}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-gray-600">{user.email}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={user.role}
+                      onChange={(e) =>
+                        handleRoleChange(user.id, e.target.value as User["role"])
+                      }
+                      className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      <option value="Patient">Patient</option>
+                      <option value="Nurse">Nurse</option>
+                      <option value="Medical Admin">Medical Admin</option>
+                      <option value="Child">Child</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                        user.status === "Active"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-600">{user.lastActive}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleStatusToggle(user.id)}
+                      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        user.status === "Active"
+                          ? "bg-red-50 text-red-700 hover:bg-red-100 hover:shadow-sm"
+                          : "bg-green-50 text-green-700 hover:bg-green-100 hover:shadow-sm"
+                      }`}
+                    >
+                      {user.status === "Active" ? "Suspend" : "Activate"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
