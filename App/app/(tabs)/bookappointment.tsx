@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   StyleSheet,
   Text,
@@ -7,20 +7,36 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import MapView from "react-native-maps"
+import axios from "axios"
+import { env } from "@/utils/env"
+import { storage } from "@/utils/storage"
+import { useRouter } from "expo-router"
 
+// Interface for Parent data from API
+interface Parent {
+  id: string
+  name: string
+  age: number
+  gender: string
+  address: string
+  diseases: string
+  medications: string
+  emergencyContact: string
+}
 
 export default function BookAppointment() {
-  // Mock patient data - in real app, fetch from state/API
-  const patients = [
-    { id: 1, name: "Sita Dhenga", age: 68, gender: "Female" },
-    { id: 2, name: "Kumar Dhenga", age: 72, gender: "Male" },
-  ]
+  const router = useRouter()
 
-  const [selectedPatient, setSelectedPatient] = useState<number | null>(null)
+  // State for parents data
+  const [parents, setParents] = useState<Parent[]>([])
+  const [loadingParents, setLoadingParents] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState("")
   const [appointmentDate, setAppointmentDate] = useState("")
   const [timeSlot, setTimeSlot] = useState("")
@@ -46,18 +62,196 @@ export default function BookAppointment() {
     { value: "monthly", label: "Monthly" },
   ]
 
-  const handleSubmit = () => {
-    if (!selectedPatient || !selectedService || !appointmentDate || !timeSlot) {
-      Alert.alert("Missing Information", "Please fill in all required fields")
+  // Fetch parents from API
+  const getParents = async () => {
+    setLoadingParents(true)
+    try {
+      // Get the auth token
+      const token = await storage.getAuthToken()
+
+      if (!token) {
+        Alert.alert("Error", "You must be logged in to book an appointment. Please login first.")
+        router.replace("/auth/login")
+        return
+      }
+
+      // Fetch parents with Authorization header
+      const response = await axios.get(`${env.baseUrl}api/parents`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      console.log("Parents Response:", response.data)
+
+      // Map the API response to parents state
+      if (response.data.success && response.data.data.parents) {
+        setParents(response.data.data.parents)
+      }
+    } catch (error: any) {
+      console.error("Error while getting parents:", error)
+      const errorMessage = error.response?.data?.message || "Failed to fetch parents. Please try again."
+      Alert.alert("Error", errorMessage)
+    } finally {
+      setLoadingParents(false)
+    }
+  }
+    
+    
+  const BookAppoinment = async ({
+    parentId,
+    scheduledFor,
+  }: {
+    parentId: string
+    scheduledFor: string
+  }) => {
+    try {
+      // Get the auth token
+      const token = await storage.getAuthToken()
+
+      if (!token) {
+        Alert.alert(
+          "Error",
+          "You must be logged in to book an appointment. Please login first."
+        )
+        router.replace("/auth/login")
+        return false
+      }
+
+      // Make API request
+      const response = await axios.post(
+        `${env.baseUrl}api/visits`,
+        {
+          parentId,
+          scheduledFor,
+          visitType: "FULL",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      console.log("Book Appointment Response:", response.data)
+
+      // Show success message
+      const selectedParent = parents.find((p) => p.id === parentId)
+      Alert.alert(
+        "Appointment Confirmed! ✅",
+        `Appointment booked successfully!\n\nPatient: ${selectedParent?.name}\nDate: ${appointmentDate}\nTime: ${timeSlot}\n\nA nurse will be assigned shortly.`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Navigate back or to appointments list
+              router.back()
+            },
+          },
+        ]
+      )
+
+      return true
+    } catch (error: any) {
+      console.error("Error while creating book appointment:", error)
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to book appointment. Please try again."
+      Alert.alert("Error", errorMessage)
+      return false
+    }
+  }
+
+  // Fetch parents on component mount
+  useEffect(() => {
+    getParents()
+  }, [])
+
+  // Format date and time for API
+  const formatScheduledFor = (date: string, time: string): string => {
+    // Convert date from YYYY-MM-DD and time slot to ISO format
+    // Example: "2024-01-15" + "9-11 AM" -> "2024-01-15T09:00:00.000Z"
+
+    // Extract start hour from time slot (e.g., "9-11 AM" -> "9")
+    const timeMatch = time.match(/^(\d+)/)
+    if (!timeMatch) return new Date().toISOString()
+
+    const hour = parseInt(timeMatch[1])
+    const isPM = time.includes("PM")
+    const hour24 = isPM && hour !== 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour
+
+    // Create date object
+    const dateTime = new Date(date)
+    dateTime.setHours(hour24, 0, 0, 0)
+
+    return dateTime.toISOString()
+  }
+
+  // Handle form submission
+    const handleSubmit = async () => {
+      
+        console.log("Book appoinment button clicked ")
+    // Validation
+    if (!selectedPatient) {
+      Alert.alert("Missing Information", "Please select a patient")
       return
     }
 
-    Alert.alert(
-      "Appointment Confirmed! ✅",
-      `Appointment ID: #APT${Math.floor(Math.random() * 10000)}\n\nPatient: ${patients.find(p => p.id === selectedPatient)?.name}\nDate: ${appointmentDate}\nTime: ${timeSlot}\n\nA nurse will be assigned shortly.`,
-      [{ text: "Track Appointment", style: "default" }, { text: "OK" }]
-    )
+    if (!selectedService) {
+      Alert.alert("Missing Information", "Please select a service type")
+      return
+    }
+
+    if (!appointmentDate) {
+      Alert.alert("Missing Information", "Please select an appointment date")
+      return
+    }
+
+    if (!timeSlot) {
+      Alert.alert("Missing Information", "Please select a time slot")
+      return
+    }
+
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    if (!dateRegex.test(appointmentDate)) {
+      Alert.alert(
+        "Invalid Date",
+        "Please enter date in YYYY-MM-DD format (e.g., 2024-01-15)"
+      )
+      return
+    }
+
+    // Validate date is not in the past
+    const selectedDate = new Date(appointmentDate)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (selectedDate < today) {
+      Alert.alert("Invalid Date", "Please select a future date")
+      return
+    }
+
+    setLoading(true)
+    try {
+      // Format the scheduled date/time for API
+      const scheduledFor = formatScheduledFor(appointmentDate, timeSlot)
+console.log("working on booking data")
+      // Call BookAppointment (success message and navigation handled inside)
+    const data =   await BookAppoinment({
+        parentId: selectedPatient,
+        scheduledFor: scheduledFor,
+    })
+        console.log("Appointment Booking Data:", data)
+    } catch (error) {
+      console.error("Error in handleSubmit:", error)
+      Alert.alert("Error", "An unexpected error occurred. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
+
+ 
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -75,33 +269,55 @@ export default function BookAppointment() {
         {/* 1. Select Patient */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Select Patient</Text>
-          {patients.map((patient) => (
-            <TouchableOpacity
-              key={patient.id}
-              style={[
-                styles.patientCard,
-                selectedPatient === patient.id && styles.patientCardActive,
-              ]}
-              onPress={() => setSelectedPatient(patient.id)}
-            >
-              <View style={styles.patientInfo}>
-                <Ionicons
-                  name={patient.gender === "Female" ? "woman" : "man"}
-                  size={24}
-                  color={selectedPatient === patient.id ? "#2f80ed" : "#666"}
-                />
-                <View style={styles.patientDetails}>
-                  <Text style={styles.patientName}>{patient.name}</Text>
-                  <Text style={styles.patientAge}>
-                    {patient.age} yrs • {patient.gender}
-                  </Text>
+
+          {loadingParents ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#2f80ed" />
+              <Text style={styles.loadingText}>Loading parents...</Text>
+            </View>
+          ) : parents.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="people-outline" size={48} color="#999" />
+              <Text style={styles.emptyText}>No parents added yet</Text>
+              <Text style={styles.emptySubtext}>
+                Please add a parent profile first
+              </Text>
+              <TouchableOpacity
+                style={styles.addParentBtn}
+                onPress={() => router.push("/(tabs)/add-parent")}
+              >
+                <Text style={styles.addParentBtnText}>Add Parent</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            parents.map((patient) => (
+              <TouchableOpacity
+                key={patient.id}
+                style={[
+                  styles.patientCard,
+                  selectedPatient === patient.id && styles.patientCardActive,
+                ]}
+                onPress={() => setSelectedPatient(patient.id)}
+              >
+                <View style={styles.patientInfo}>
+                  <Ionicons
+                    name={patient.gender === "Female" ? "woman" : "man"}
+                    size={24}
+                    color={selectedPatient === patient.id ? "#2f80ed" : "#666"}
+                  />
+                  <View style={styles.patientDetails}>
+                    <Text style={styles.patientName}>{patient.name}</Text>
+                    <Text style={styles.patientAge}>
+                      {patient.age} yrs • {patient.gender}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              {selectedPatient === patient.id && (
-                <Ionicons name="checkmark-circle" size={24} color="#2f80ed" />
-              )}
-            </TouchableOpacity>
-          ))}
+                {selectedPatient === patient.id && (
+                  <Ionicons name="checkmark-circle" size={24} color="#2f80ed" />
+                )}
+              </TouchableOpacity>
+            ))
+          )}
         </View>
 
         {/* 2. Service Type */}
@@ -118,7 +334,7 @@ export default function BookAppointment() {
                 onPress={() => setSelectedService(service.id)}
               >
                 <Ionicons
-                  name={service.icon}
+                  name={service.icon as any}
                   size={28}
                   color={selectedService === service.id ? "#2f80ed" : "#666"}
                 />
@@ -317,8 +533,14 @@ export default function BookAppointment() {
         </View>
 
         {/* 8. Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Confirm Appointment</Text>
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.submitButtonText}>
+            {loading ? "Booking Appointment..." : "Confirm Appointment"}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -361,6 +583,51 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   // Patient Selection
+  loadingContainer: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: "#666",
+  },
+  emptyContainer: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e1e4e8",
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginTop: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 8,
+    textAlign: "center",
+  },
+  addParentBtn: {
+    marginTop: 20,
+    backgroundColor: "#2f80ed",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+  },
+  addParentBtnText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "700",
+  },
   patientCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -643,6 +910,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+  },
+  submitButtonDisabled: {
+    backgroundColor: "#a0c4f0",
+    opacity: 0.6,
   },
   submitButtonText: {
     color: "#fff",
