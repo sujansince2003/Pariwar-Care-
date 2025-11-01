@@ -8,21 +8,75 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native'
 import { Link, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import axios from 'axios'
+import { env } from '@/utils/env'
+import { storage } from '@/utils/storage'
 
 export default function RegisterScreen() {
   const router = useRouter()
-  const [fullName, setFullName] = useState('')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleRegister = () => {
-    // TODO: Implement actual registration
-    router.replace('/(tabs)')
+  const handleRegister = async () => {
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all required fields")
+      return
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match")
+      return
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long")
+      return
+    }
+
+    setLoading(true)
+    try {
+      console.log("Registering user:", { name, email })
+      const {data} = await axios.post(`${env.baseUrl}api/auth/signup`, {
+        name,
+        email,
+        password,
+        role: "CHILD"
+      })
+
+      console.log("Signup Response:", data.data)
+
+      if (data.data.token) {
+        // Store the token
+        await storage.setAuthToken(data.data.token)
+
+        // Store user data if available
+        if (data.data.user) {
+          await storage.setUserData(data.data.user)
+        }
+
+        Alert.alert("Success", "Account created successfully!", [
+          {
+            text: "OK",
+            onPress: () => router.replace("/(tabs)")
+          }
+        ])
+      }
+    } catch (error: any) {
+      console.error("Signup Error:", error)
+      const errorMessage = error.response?.data?.message || "Registration failed. Please try again."
+      Alert.alert("Error", errorMessage)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,8 +101,8 @@ export default function RegisterScreen() {
                 style={styles.input}
                 placeholder="Enter your full name"
                 placeholderTextColor="#999"
-                value={fullName}
-                onChangeText={setFullName}
+                value={name}
+                onChangeText={setName}
                 autoCapitalize="words"
               />
             </View>
@@ -105,8 +159,14 @@ export default function RegisterScreen() {
               />
             </View>
 
-            <TouchableOpacity style={styles.primaryButton} onPress={handleRegister}>
-              <Text style={styles.primaryButtonText}>Create Account</Text>
+            <TouchableOpacity
+              style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+              onPress={handleRegister}
+              disabled={loading}
+            >
+              <Text style={styles.primaryButtonText}>
+                {loading ? "Creating Account..." : "Create Account"}
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.termsSection}>
@@ -198,6 +258,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+  },
+  primaryButtonDisabled: {
+    backgroundColor: '#a0c4f0',
+    opacity: 0.6,
   },
   primaryButtonText: {
     color: '#fff',
