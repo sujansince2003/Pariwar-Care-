@@ -1,7 +1,13 @@
+"use client"
+
 import { NurseVisitList } from './NurseVisitList';
 import { NurseStats } from './NurseStats';
+import { useRoleProtection } from "@/lib/hooks/useRoleProtection"
 
 export default function NurseDashboard() {
+  // Only NURSE role can access this page
+  useRoleProtection(['NURSE']);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <div className="p-6 max-w-7xl mx-auto">
@@ -9,7 +15,7 @@ export default function NurseDashboard() {
         <div className="mb-8 relative">
           <div className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-2xl" />
           <div className="relative p-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Nurse Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Paramedic Dashboard</h1>
             <p className="text-gray-600">Track your visits and daily tasks</p>
           </div>
         </div>

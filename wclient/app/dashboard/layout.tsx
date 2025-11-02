@@ -1,44 +1,148 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [userData, setUserData] = useState<{ name?: string; email?: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    // Get user data from cookie
+    const userToken = Cookies.get('user_token');
+    if (userToken) {
+      try {
+        // Decode JWT
+        const base64Url = userToken.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        setUserData(JSON.parse(jsonPayload));
+      } catch (error) {
+        console.error('Error decoding user token:', error);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Clear all auth cookies
+    Cookies.remove('auth_token');
+    Cookies.remove('user_token');
+    Cookies.remove('token');
+    Cookies.remove('user');
+
+    // Clear localStorage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_token');
+
+    toast.success('Logged out successfully');
+    router.push('/auth/login');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Shared navigation/sidebar can go here */}
       <div className="flex">
         {/* Sidebar */}
         <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 hidden lg:block">
-          <div className="h-full px-3 py-4">
-                      <nav className="space-y-1">
-            <Link
-              href="/dashboard"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Overview
-            </Link>
-            <Link
-              href="/dashboard/nurse"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Nurse Dashboard
-            </Link>
-            <Link
-              href="/dashboard/medical-admin"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Medical Admin
-            </Link>
-            <Link
-              href="/dashboard/admin"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Admin
-            </Link>
-          </nav>
+          <div className="h-full flex flex-col">
+            {/* Profile Section */}
+            <div className="px-3 py-4 border-b border-gray-200">
+              <div className="flex items-center space-x-3 px-3 py-2">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {userData?.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {userData?.name || 'User'}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {userData?.role || 'Role'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+              <Link
+                href="/dashboard"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  pathname === '/dashboard'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Overview
+              </Link>
+              <Link
+                href="/dashboard/nurse"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  pathname === '/dashboard/nurse'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Paramedic Dashboard
+              </Link>
+              <Link
+                href="/dashboard/medical-admin"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  pathname === '/dashboard/medical-admin'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Medical Admin
+              </Link>
+              <Link
+                href="/dashboard/admin"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  pathname === '/dashboard/admin'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                Admin
+              </Link>
+            </nav>
+
+            {/* Logout Button */}
+            <div className="px-3 py-4 border-t border-gray-200">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              >
+                <svg
+                  className="w-5 h-5 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
           </div>
         </aside>
 

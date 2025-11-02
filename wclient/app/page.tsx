@@ -138,9 +138,9 @@ export default function Home() {
               </div> */}
 
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Your parents won't say they're sick.
+                Care That Connects{" "}
                 <span className="block text-blue-600 mt-2">
-                  Our nurse will.
+                  When Distance Grows
                 </span>
               </h1>
 

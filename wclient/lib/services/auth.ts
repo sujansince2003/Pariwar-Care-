@@ -55,7 +55,7 @@ export const authService = {
    * @returns Promise with auth response containing token and user
    */
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    return apiClient<AuthResponse>('/api/auth/login', {
+    return apiClient<AuthResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -67,7 +67,7 @@ export const authService = {
    * @returns Promise with signup response containing user data
    */
   signup: async (credentials: SignupCredentials): Promise<SignupResponse> => {
-    return apiClient<SignupResponse>('/api/auth/signup', {
+    return apiClient<SignupResponse>('/auth/signup', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });

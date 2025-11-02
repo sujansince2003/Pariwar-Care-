@@ -1,7 +1,13 @@
+"use client"
+
 import { ReportList } from './ReportList';
 import { AdminStats } from './AdminStats';
+import { useRoleProtection } from "@/lib/hooks/useRoleProtection"
 
 export default function MedicalAdminDashboard() {
+  // Only MEDICAL_ADMIN role can access this page
+  useRoleProtection(['MEDICAL_ADMIN']);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <div className="p-6 max-w-7xl mx-auto">

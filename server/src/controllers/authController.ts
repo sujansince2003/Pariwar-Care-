@@ -68,6 +68,7 @@ export const signupController = async (req: Request, res: Response) => {
                 email,
                 password: hashedPassword,
                 role
+                
             },
             select: {
                 id: true,
