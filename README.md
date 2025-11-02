@@ -1,823 +1,559 @@
-# API Documentation
+# PariwarCare - Healthcare Management System Documentation
 
-## Base URL
-```
-http://localhost:8000/api
-```
+## 🏥 Project Overview
 
-## Authentication
-Most endpoints require JWT token in header:
-```
-Authorization: Bearer <token>
-```
+**PariwarCare** is a comprehensive healthcare management platform designed to bridge the gap between Nepalese diaspora and their parents' healthcare needs back home. The system enables remote monitoring, professional nursing care, and real-time health tracking through a multi-platform ecosystem.
 
----
+### Vision Statement
+*"Your parents won't say they're sick. Our nurse will."*
 
-## 🔐 Authentication Routes
-
-### POST `/auth/signup`
-Create new user account
-
-**Request:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "CHILD" // CHILD | NURSE | MEDICAL_ADMIN | ADMIN
-}
-```
-
-**Response (201):**
-```json
-{
-  "success": true,
-  "message": "User created successfully",
-  "data": {
-    "user": {
-      "id": "cm123...",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "role": "CHILD",
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  }
-}
-```
-
-### POST `/auth/login`
-User login
-
-**Request:**
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-}
-```
+### Mission
+To provide professional healthcare monitoring for parents in Nepal, managed remotely by their children living abroad, creating a sustainable healthcare model that prevents emergencies through regular monitoring.
 
 ---
 
-## 👥 User Management Routes
+## 🏗️ System Architecture
 
-### GET `/users` 
-Get all users (ADMIN only)
+### Multi-Platform Architecture
+The system consists of three main applications:
 
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "users": [
-      {
-        "id": "cm123...",
-        "name": "John Doe",
-        "email": "john@example.com",
-        "role": "CHILD",
-        "createdAt": "2024-01-01T00:00:00.000Z"
-      }
-    ]
-  }
-}
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Mobile App    │    │   Web Client    │    │   Backend API   │
+│   (React Native)│    │   (Next.js)     │    │   (Node.js)     │
+│                 │    │                 │    │                 │
+│ • Child Users   │    │ • Admin Panel   │    │ • Authentication│
+│ • Appointments  │    │ • Nurse Portal  │    │ • Visit Mgmt    │
+│ • Notifications │    │ • Medical Admin │    │ • Data Storage  │
+│ • Parent Mgmt   │    │ • Analytics     │    │ • Email Service │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+        │                        │                        │
+        └────────────────────────┼────────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │   PostgreSQL    │
+                    │   Database      │
+                    │                 │
+                    │ • User Data     │
+                    │ • Visit Records │
+                    │ • Health Vitals │
+                    │ • Relationships │
+                    └─────────────────┘
 ```
 
-### GET `/users/:id`
-Get user by ID (Own profile or ADMIN)
+### Technology Stack
 
-**Headers:** `Authorization: Bearer <token>`
+#### Backend (Server)
+- **Runtime**: Node.js with TypeScript
+- **Framework**: Express.js
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT tokens with bcrypt
+- **File Upload**: Express-fileupload
+- **Email**: Nodemailer
+- **API Documentation**: Swagger UI
+- **Validation**: Zod schemas
 
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": "cm123...",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "role": "CHILD",
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  }
-}
-```
+#### Web Client (wclient)
+- **Framework**: Next.js 16 with React 19
+- **Styling**: Tailwind CSS
+- **UI Components**: Custom components with Lucide icons
+- **Charts**: Recharts for analytics
+- **Animations**: Framer Motion
+- **State Management**: React Context API
+- **Notifications**: React Hot Toast
+
+#### Mobile App (App)
+- **Framework**: React Native with Expo
+- **Navigation**: Expo Router
+- **Storage**: AsyncStorage
+- **HTTP Client**: Axios
+- **Maps**: React Native Maps
+- **UI**: Custom styled components
 
 ---
 
-## 👴 Parent Management Routes
+## 🎯 Core Features & Use Cases
 
-### POST `/parents`
-Add new parent (CHILD role)
+### 1. User Management System
+**Roles & Permissions:**
+- **CHILD**: Schedule visits, manage parents, view approved health reports
+- **NURSE**: Conduct visits, record vitals, submit reports
+- **MEDICAL_ADMIN**: Review and approve/reject health reports
+- **ADMIN**: System administration, user management, nurse assignment
 
-**Headers:** `Authorization: Bearer <token>`
+### 2. Parent Health Monitoring
+**Key Features:**
+- Parent profile management (demographics, medical history)
+- Monthly home visit scheduling
+- Real-time health vital tracking
+- Emergency contact management
+- Medication adherence monitoring
 
-**Request:**
-```json
-{
-  "name": "Mary Doe",
-  "age": 75,
-  "gender": "Female",
-  "address": "123 Main St, City, State",
-  "diseases": "Diabetes, Hypertension",
-  "medications": "Metformin, Lisinopril",
-  "emergencyContact": "+1234567890"
-}
+### 3. Visit Management Workflow
 ```
-
-**Response (201):**
-```json
-{
-  "success": true,
-  "message": "Parent added successfully",
-  "data": {
-    "parent": {
-      "id": "cm456...",
-      "name": "Mary Doe",
-      "age": 75,
-      "gender": "Female",
-      "address": "123 Main St, City, State",
-      "diseases": "Diabetes, Hypertension",
-      "medications": "Metformin, Lisinopril",
-      "emergencyContact": "+1234567890"
-    }
-  }
-}
-```
-
-### GET `/parents`
-Get all parents for logged-in child
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Parents retrieved successfully",
-  "data": {
-    "parents": [
-      {
-        "id": "cm456...",
-        "name": "Mary Doe",
-        "age": 75,
-        "gender": "Female",
-        "address": "123 Main St, City, State",
-        "diseases": "Diabetes, Hypertension",
-        "medications": "Metformin, Lisinopril",
-        "emergencyContact": "+1234567890"
-      }
-    ]
-  }
-}
-```
-
-### GET `/parents/:id`
-Get specific parent details
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Parent retrieved successfully",
-  "data": {
-    "parent": {
-      "id": "cm456...",
-      "name": "Mary Doe",
-      "age": 75,
-      "gender": "Female",
-      "address": "123 Main St, City, State",
-      "diseases": "Diabetes, Hypertension",
-      "medications": "Metformin, Lisinopril",
-      "emergencyContact": "+1234567890"
-    }
-  }
-}
-```
-
-### PUT `/parents/:id`
-Update parent information
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:** (All fields optional)
-```json
-{
-  "name": "Mary Doe Updated",
-  "age": 76,
-  "diseases": "Diabetes, Hypertension, Arthritis"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Parent updated successfully"
-}
-```
-
-### DELETE `/parents/:id`
-Delete parent profile
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Parent deleted successfully"
-}
-```
-
----
-
-## 🏥 Visit Management Routes
-
-### POST `/visits`
-Schedule new visit (CHILD role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:**
-```json
-{
-  "parentId": "cm456...",
-  "scheduledFor": "2024-12-15T10:00:00Z",
-  "visitType": "BASIC" // BASIC | FULL
-}
-```
-
-**Response (201):**
-```json
-{
-  "success": true,
-  "message": "Visit scheduled successfully",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "parentId": "cm456...",
-      "scheduledFor": "2024-12-15T10:00:00.000Z",
-      "visitType": "BASIC",
-      "status": "PENDING",
-      "Parent": {
-        "name": "Mary Doe",
-        "address": "123 Main St, City, State"
-      }
-    }
-  }
-}
-```
-
-### GET `/visits/child`
-Get child's visits (CHILD role) - Only shows approved visits with vitals
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visits retrieved successfully",
-  "data": {
-    "visits": [
-      {
-        "id": "cm789...",
-        "parentId": "cm456...",
-        "nurseId": "cm999...",
-        "scheduledFor": "2024-12-15T10:00:00.000Z",
-        "visitType": "BASIC",
-        "status": "APPROVED",
-        "completedAt": "2024-12-15T11:30:00.000Z",
-        "Parent": {
-          "name": "Mary Doe",
-          "address": "123 Main St, City, State"
-        },
-        "Nurse": {
-          "name": "Jane Smith",
-          "email": "jane@example.com"
-        },
-        "vitals": {
-          "bp": "120/80",
-          "sugar": "95",
-          "pulse": "72",
-          "oxygen": "98",
-          "temperature": "98.6",
-          "notes": "Patient stable",
-          "medicines": "Continue current medication"
-        }
-      }
-    ]
-  }
-}
-```
-
-### GET `/visits/nurse`
-Get nurse's assigned visits (NURSE role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Nurse visits retrieved successfully",
-  "data": {
-    "visits": [
-      {
-        "id": "cm789...",
-        "parentId": "cm456...",
-        "scheduledFor": "2024-12-15T10:00:00.000Z",
-        "visitType": "BASIC",
-        "status": "ASSIGNED",
-        "Parent": {
-          "name": "Mary Doe",
-          "age": 75,
-          "address": "123 Main St, City, State",
-          "diseases": "Diabetes, Hypertension",
-          "medications": "Metformin, Lisinopril",
-          "emergencyContact": "+1234567890"
-        }
-      }
-    ]
-  }
-}
-```
-
-### POST `/visits/:id/assign`
-Assign nurse to visit (ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:**
-```json
-{
-  "nurseId": "cm999..."
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Nurse assigned successfully",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "ASSIGNED",
-      "Parent": {
-        "name": "Mary Doe",
-        "address": "123 Main St, City, State"
-      },
-      "Nurse": {
-        "name": "Jane Smith",
-        "email": "jane@example.com"
-      }
-    }
-  }
-}
-```
-
-### POST `/visits/:id/start`
-Start visit (NURSE role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:** No body required
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visit started successfully",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "STARTED"
-    }
-  }
-}
-```
-
-### POST `/visits/:id/vitals`
-Submit vitals data (NURSE role) - Sets status to WAITING_APPROVAL
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:**
-```json
-{
-  "bp": "120/80",
-  "sugar": "95",
-  "pulse": "72",
-  "oxygen": "98",
-  "temperature": "98.6",
-  "notes": "Patient doing well, stable vitals",
-  "medicines": "Continue current medication, add vitamin D"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Vitals submitted and sent for medical review",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "WAITING_APPROVAL",
-      "Parent": {
-        "name": "Mary Doe",
-        "address": "123 Main St, City, State",
-        "emergencyContact": "+1234567890"
-      },
-      "Nurse": {
-        "id": "cm999...",
-        "name": "Jane Smith",
-        "email": "jane@example.com"
-      },
-      "vitals": {
-        "bp": "120/80",
-        "sugar": "95",
-        "pulse": "72",
-        "oxygen": "98",
-        "temperature": "98.6",
-        "notes": "Patient doing well, stable vitals",
-        "medicines": "Continue current medication, add vitamin D"
-      }
-    },
-    "vitals": {
-      "id": "cm111...",
-      "visitId": "cm789...",
-      "bp": "120/80",
-      "sugar": "95",
-      "pulse": "72",
-      "oxygen": "98",
-      "temperature": "98.6",
-      "notes": "Patient doing well, stable vitals",
-      "medicines": "Continue current medication, add vitamin D",
-      "createdAt": "2024-12-15T11:00:00.000Z"
-    }
-  }
-}
-```
-
----
-
-## 👩⚕️ Nurse Management Routes
-
-### GET `/nurses`
-Get list of nurses (ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Nurses retrieved successfully",
-  "data": {
-    "nurses": [
-      {
-        "id": "cm999...",
-        "name": "Jane Smith",
-        "email": "jane@example.com"
-      }
-    ]
-  }
-}
-```
-
----
-
-## 🏥 Medical Review Routes
-
-### GET `/review/visits/review`
-Get visits waiting for approval (MEDICAL_ADMIN | ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visits for review",
-  "data": {
-    "visits": [
-      {
-        "id": "cm789...",
-        "parentId": "cm456...",
-        "nurseId": "cm999...",
-        "scheduledFor": "2024-12-15T10:00:00.000Z",
-        "visitType": "BASIC",
-        "status": "WAITING_APPROVAL",
-        "Parent": {
-          "id": "cm456...",
-          "name": "Mary Doe",
-          "age": 75,
-          "gender": "Female",
-          "address": "123 Main St, City, State",
-          "diseases": "Diabetes, Hypertension",
-          "medications": "Metformin, Lisinopril",
-          "emergencyContact": "+1234567890"
-        },
-        "Nurse": {
-          "id": "cm999...",
-          "name": "Jane Smith",
-          "email": "jane@example.com"
-        },
-        "vitals": {
-          "id": "cm111...",
-          "visitId": "cm789...",
-          "bp": "120/80",
-          "sugar": "95",
-          "pulse": "72",
-          "oxygen": "98",
-          "temperature": "98.6",
-          "notes": "Patient doing well, stable vitals",
-          "medicines": "Continue current medication, add vitamin D",
-          "createdAt": "2024-12-15T11:00:00.000Z"
-        }
-      }
-    ]
-  }
-}
-```
-
-### GET `/review/visits/:id/review`
-Get visit details for review (MEDICAL_ADMIN | ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visit found",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "WAITING_APPROVAL",
-      "Parent": {
-        "name": "Mary Doe",
-        "age": 75,
-        "diseases": "Diabetes, Hypertension"
-      },
-      "Nurse": {
-        "name": "Jane Smith",
-        "email": "jane@example.com"
-      },
-      "vitals": {
-        "bp": "120/80",
-        "sugar": "95",
-        "pulse": "72",
-        "oxygen": "98",
-        "temperature": "98.6",
-        "notes": "Patient doing well, stable vitals",
-        "medicines": "Continue current medication, add vitamin D"
-      }
-    }
-  }
-}
-```
-
-### POST `/review/visits/:id/approve`
-Approve visit report (MEDICAL_ADMIN | ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:**
-```json
-{
-  "approvalNote": "Vitals look normal, approved for family viewing"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visit approved",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "APPROVED",
-      "approvedAt": "2024-12-15T12:00:00.000Z",
-      "approvalNote": "Vitals look normal, approved for family viewing",
-      "completedAt": "2024-12-15T12:00:00.000Z",
-      "ApprovedBy": {
-        "id": "cm888...",
-        "name": "Dr. Smith",
-        "email": "doctor@example.com"
-      },
-      "vitals": {
-        "bp": "120/80",
-        "sugar": "95",
-        "pulse": "72",
-        "oxygen": "98",
-        "temperature": "98.6",
-        "notes": "Patient doing well, stable vitals",
-        "medicines": "Continue current medication, add vitamin D"
-      }
-    }
-  }
-}
-```
-
-### POST `/review/visits/:id/reject`
-Reject visit and request revision (MEDICAL_ADMIN | ADMIN role)
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Request:**
-```json
-{
-  "rejectionNote": "Blood pressure reading seems inconsistent, please recheck"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Visit rejected and sent back for revision",
-  "data": {
-    "visit": {
-      "id": "cm789...",
-      "status": "REVISION_REQUIRED",
-      "rejectionNote": "Blood pressure reading seems inconsistent, please recheck",
-      "approvedAt": "2024-12-15T12:00:00.000Z",
-      "Parent": {
-        "name": "Mary Doe"
-      },
-      "Nurse": {
-        "name": "Jane Smith"
-      },
-      "vitals": {
-        "bp": "120/80",
-        "sugar": "95"
-      }
-    }
-  }
-}
-```
-
----
-
-## 📊 Analytics Routes
-
-### GET `/analytics/parent/:id/trends?period=weekly`
-Get parent health trends
-
-**Headers:** `Authorization: Bearer <token>`
-
-**Query Parameters:**
-- `period`: "weekly" or "monthly" (optional, defaults to "weekly")
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Health trends fetched successfully",
-  "data": {
-    "parentId": "cm456...",
-    "period": "weekly",
-    "vitalsTrend": [
-      {
-        "weekStart": "2024-12-09",
-        "bp": "120/80",
-        "sugar": 95.5,
-        "pulse": 72.0,
-        "oxygen": 98.0,
-        "temperature": 98.6
-      },
-      {
-        "weekStart": "2024-12-16",
-        "bp": "118/78",
-        "sugar": 92.0,
-        "pulse": 70.0,
-        "oxygen": 98.5,
-        "temperature": 98.4
-      }
-    ]
-  }
-}
-```
-
----
-
-## 🔧 System Routes
-
-### GET `/`
-API status
-
-**Response (200):**
-```json
-{
-  "message": "Team-ALPHA Backend API",
-  "status": "running",
-  "timestamp": "2024-12-15T10:00:00.000Z"
-}
-```
-
-### GET `/api/health`
-Health check
-
-**Response (200):**
-```json
-{
-  "message": "API is healthy",
-  "status": "success"
-}
-```
-
----
-
-## 🚨 Common Error Responses
-
-### 400 Bad Request
-```json
-{
-  "success": false,
-  "message": "invalid data"
-}
-```
-
-### 401 Unauthorized
-```json
-{
-  "success": false,
-  "message": "Access token required"
-}
-```
-
-### 403 Forbidden
-```json
-{
-  "success": false,
-  "message": "Insufficient permissions"
-}
-```
-
-### 404 Not Found
-```json
-{
-  "success": false,
-  "message": "Route not found"
-}
-```
-
-### 500 Internal Server Error
-```json
-{
-  "success": false,
-  "message": "Internal server error"
-}
-```
-
----
-
-## 📝 Visit Status Flow
-
-```
+Visit Lifecycle:
 PENDING → ASSIGNED → STARTED → WAITING_APPROVAL → APPROVED
                                       ↓
-                               REVISION_REQUIRED → (back to WAITING_APPROVAL)
+                               REVISION_REQUIRED
 ```
 
-## 🔑 Role Permissions
+**Visit Types:**
+- **BASIC**: Standard health checkup (45 minutes)
+- **FULL**: Comprehensive health assessment with additional tests
 
-| Role | Permissions |
-|------|-------------|
-| **CHILD** | Schedule visits, view own parents, view approved visit results |
-| **NURSE** | View assigned visits, start visits, submit vitals |
-| **MEDICAL_ADMIN** | Review and approve/reject visit reports |
-| **ADMIN** | All permissions, assign nurses, view all users |
+### 4. Health Data Collection
+**Vital Signs Monitored:**
+- Blood Pressure (BP)
+- Blood Sugar levels
+- Pulse rate
+- Oxygen saturation
+- Body temperature
+- General health notes
+- Medication recommendations
 
-## 📧 Email Notifications
+### 5. Medical Review System
+- Medical professionals review all health reports
+- Quality assurance before family notification
+- Revision requests for incomplete/unclear reports
+- Approval workflow with detailed notes
 
-- **Visit Completion**: Sent to children when visit is approved by medical admin
-- **Contains**: Parent name, visit date, approved vitals, doctor notes
+### 6. Real-time Communication
+- Instant notifications for health alerts
+- Email notifications for visit completions
+- Dashboard updates for family members
+- Emergency contact protocols
+
+---
+
+## 🔄 Workflow Documentation
+
+### Child User Workflow
+1. **Registration & Setup**
+   - Create account with CHILD role
+   - Add parent profiles with medical history
+   - Set up emergency contacts
+
+2. **Visit Scheduling**
+   - Schedule monthly visits for parents
+   - Choose visit type (BASIC/FULL)
+   - Receive confirmation and nurse assignment
+
+3. **Monitoring & Updates**
+   - Receive real-time health updates
+   - View approved health reports
+   - Track health trends over time
+   - Get emergency notifications
+
+### Nurse Workflow
+1. **Assignment Reception**
+   - Receive visit assignments from admin
+   - View parent medical history and location
+   - Prepare for scheduled visits
+
+2. **Visit Execution**
+   - Start visit session
+   - Conduct health assessment
+   - Record vital signs and observations
+   - Submit comprehensive report
+
+3. **Follow-up**
+   - Await medical review approval
+   - Address revision requests if needed
+   - Maintain visit documentation
+
+### Medical Admin Workflow
+1. **Report Review**
+   - Review submitted health reports
+   - Verify vital signs accuracy
+   - Check completeness of documentation
+
+2. **Decision Making**
+   - Approve reports for family viewing
+   - Request revisions for incomplete reports
+   - Add medical recommendations
+
+3. **Quality Assurance**
+   - Ensure medical standards compliance
+   - Maintain review documentation
+   - Monitor nurse performance
+
+### System Admin Workflow
+1. **User Management**
+   - Create and manage user accounts
+   - Assign roles and permissions
+   - Monitor system usage
+
+2. **Nurse Assignment**
+   - Assign nurses to pending visits
+   - Balance workload distribution
+   - Manage nurse availability
+
+3. **System Monitoring**
+   - Monitor system performance
+   - Manage data backups
+   - Handle technical issues
+
+---
+
+## 📊 Database Schema
+
+### Core Entities
+
+#### User Table
+```sql
+User {
+  id: String (Primary Key)
+  name: String
+  email: String (Unique)
+  password: String (Hashed)
+  role: Enum (CHILD, NURSE, MEDICAL_ADMIN, ADMIN)
+  createdAt: DateTime
+}
+```
+
+#### Parent Table
+```sql
+Parent {
+  id: String (Primary Key)
+  name: String
+  age: Integer
+  gender: String
+  address: String
+  diseases: String (Optional)
+  medications: String (Optional)
+  emergencyContact: String
+  children: User[] (Many-to-Many)
+}
+```
+
+#### Visit Table
+```sql
+Visit {
+  id: String (Primary Key)
+  parentId: String (Foreign Key)
+  nurseId: String (Foreign Key, Optional)
+  scheduledFor: DateTime
+  visitType: Enum (BASIC, FULL)
+  status: Enum (PENDING, ASSIGNED, STARTED, WAITING_APPROVAL, REVISION_REQUIRED, APPROVED)
+  notes: String (Optional)
+  completedAt: DateTime (Optional)
+  approvedById: String (Foreign Key, Optional)
+  approvalNote: String (Optional)
+  rejectionNote: String (Optional)
+  approvedAt: DateTime (Optional)
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+```
+
+#### Vitals Table
+```sql
+Vitals {
+  id: String (Primary Key)
+  visitId: String (Foreign Key, Unique)
+  bp: String (Optional)
+  sugar: String (Optional)
+  pulse: String (Optional)
+  oxygen: String (Optional)
+  temperature: String (Optional)
+  notes: String (Optional)
+  medicines: String (Optional)
+  createdAt: DateTime
+}
+```
+
+---
+
+## 🔌 API Documentation
+
+### Base Configuration
+- **Base URL**: `http://localhost:8000/api`
+- **Authentication**: JWT Bearer tokens
+- **Content Type**: `application/json`
+
+### Key Endpoints
+
+#### Authentication
+- `POST /auth/signup` - User registration
+- `POST /auth/login` - User authentication
+
+#### Parent Management
+- `GET /parents` - List user's parents
+- `POST /parents` - Add new parent
+- `PUT /parents/:id` - Update parent info
+- `DELETE /parents/:id` - Remove parent
+
+#### Visit Management
+- `POST /visits` - Schedule new visit
+- `GET /visits/child` - Get child's visits
+- `GET /visits/nurse` - Get nurse's visits
+- `POST /visits/:id/assign` - Assign nurse (Admin)
+- `POST /visits/:id/start` - Start visit (Nurse)
+- `POST /visits/:id/vitals` - Submit vitals (Nurse)
+
+#### Medical Review
+- `GET /review/visits/review` - Pending reviews
+- `POST /review/visits/:id/approve` - Approve report
+- `POST /review/visits/:id/reject` - Request revision
+
+#### Analytics
+- `GET /analytics/parent/:id/trends` - Health trends
+
+---
+
+## 🚀 Deployment & Setup
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL 14+
+- npm/yarn package manager
+
+### Environment Variables
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/nepathon"
+
+# Authentication
+JWT_SECRET="your-jwt-secret-key"
+
+# Email Service
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_USER="your-email@gmail.com"
+EMAIL_PASS="your-app-password"
+
+# Server
+PORT=8000
+NODE_ENV="development"
+```
+
+### Installation Steps
+
+#### 1. Backend Setup
+```bash
+cd server
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run dev
+```
+
+#### 2. Web Client Setup
+```bash
+cd wclient
+npm install
+npm run dev
+```
+
+#### 3. Mobile App Setup
+```bash
+cd App
+npm install
+npx expo start
+```
+
+### Database Migration
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Reset database (if needed)
+npx prisma migrate reset
+```
+
+---
 
 ## 🔒 Security Features
 
-- JWT token authentication
-- Role-based access control
-- Medical data only visible after doctor approval
-- Input validation and sanitization
-- Rate limiting and security headers
+### Authentication & Authorization
+- JWT token-based authentication
+- Role-based access control (RBAC)
+- Password hashing with bcrypt
+- Session management with HTTP-only cookies
+
+### Data Protection
+- Input validation with Zod schemas
+- SQL injection prevention via Prisma ORM
+- XSS protection with sanitized inputs
+- CORS configuration for cross-origin requests
+
+### Medical Data Privacy
+- Health data only visible after medical approval
+- Encrypted data transmission
+- Audit trails for all medical actions
+- Secure file upload handling
+
+### API Security
+- Rate limiting implementation
+- Request validation middleware
+- Error handling without data exposure
+- Secure headers configuration
+
+---
+
+## 📈 Analytics & Monitoring
+
+### Health Trends Tracking
+- Weekly/monthly vital sign trends
+- Comparative health analysis
+- Early warning system for anomalies
+- Medication adherence tracking
+
+### System Analytics
+- User engagement metrics
+- Visit completion rates
+- Nurse performance tracking
+- System usage statistics
+
+### Reporting Features
+- Automated health reports
+- Family notification system
+- Medical review summaries
+- Emergency alert protocols
+
+---
+
+## 🎨 User Interface Design
+
+### Design Principles
+- **Accessibility First**: Large fonts, clear contrasts, intuitive navigation
+- **Mobile Responsive**: Optimized for all device sizes
+- **Cultural Sensitivity**: Nepali language support, cultural considerations
+- **Simplicity**: Easy-to-use interface for elderly users
+
+### Key UI Components
+- **Dashboard**: Real-time health status overview
+- **Visit Scheduler**: Calendar-based appointment booking
+- **Health Reports**: Visual charts and trend analysis
+- **Notification Center**: Alert management system
+- **Profile Management**: User and parent information
+
+### Color Scheme & Branding
+- **Primary**: Blue (#2f80ed) - Trust and healthcare
+- **Secondary**: Green (#27ae60) - Health and wellness
+- **Accent**: Purple (#8e44ad) - Premium care
+- **Neutral**: Gray scale for text and backgrounds
+
+---
+
+## 🌍 Impact & Social Value
+
+### Problem Addressed
+- **2M+ Nepalese abroad** with elderly parents in Nepal
+- **75% hide illness** from children to avoid worry
+- **40% diseases found too late** due to delayed detection
+- **₹800K average emergency cost** vs **₹5K monthly prevention**
+
+### Solution Benefits
+- **Early Detection**: Regular monitoring prevents emergencies
+- **Peace of Mind**: Real-time health updates for families
+- **Professional Care**: Trained nurses provide quality healthcare
+- **Cost Effective**: Prevention costs 160x less than emergency treatment
+
+### Economic Impact
+- **1000+ Nurse Jobs**: Reduces brain drain, creates employment
+- **₹2B Healthcare Savings**: Reduces emergency healthcare burden
+- **New Care Model**: Diaspora-funded healthcare innovation
+- **Scalable Solution**: Replicable across South Asian communities
+
+---
+
+## 🔮 Future Roadmap
+
+### Phase 1 (Current)
+- ✅ Core platform development
+- ✅ Basic visit management
+- ✅ Health data collection
+- ✅ Medical review system
+
+### Phase 2 (Next 6 months)
+- 🔄 AI-powered health insights
+- 🔄 Telemedicine integration
+- 🔄 Medication delivery system
+- 🔄 Multi-language support
+
+### Phase 3 (Next 12 months)
+- 📋 IoT device integration
+- 📋 Predictive health analytics
+- 📋 Insurance partnerships
+- 📋 Regional expansion
+
+### Phase 4 (Long-term)
+- 📋 Government healthcare integration
+- 📋 Research data contribution
+- 📋 International scaling
+- 📋 Chronic disease management
+
+---
+
+## 🤝 Contributing Guidelines
+
+### Development Standards
+- **Code Style**: ESLint + Prettier configuration
+- **Testing**: Unit tests for critical functions
+- **Documentation**: Inline comments and API docs
+- **Version Control**: Git flow with feature branches
+
+### Pull Request Process
+1. Fork the repository
+2. Create feature branch
+3. Implement changes with tests
+4. Update documentation
+5. Submit pull request with description
+
+### Code Review Criteria
+- Functionality correctness
+- Security considerations
+- Performance optimization
+- Code maintainability
+- Documentation completeness
+
+---
+
+## 📞 Support & Contact
+
+### Technical Support
+- **Email**: tech@pariwarcare.com
+- **Documentation**: Internal API docs at `/api-docs`
+- **Issue Tracking**: GitHub Issues
+
+### Business Inquiries
+- **Email**: hello@pariwarcare.com
+- **Website**: www.pariwarcare.com
+
+### Emergency Protocols
+- **24/7 Hotline**: For medical emergencies
+- **Escalation Matrix**: Defined response procedures
+- **Backup Systems**: Redundancy for critical operations
+
+---
+
+## 📄 License & Legal
+
+### Software License
+- **Type**: Proprietary Software
+- **Usage**: Internal development and deployment
+- **Restrictions**: No redistribution without permission
+
+### Data Privacy
+- **Compliance**: GDPR-inspired data protection
+- **Medical Data**: HIPAA-equivalent security standards
+- **User Consent**: Explicit consent for data collection
+- **Data Retention**: Defined retention policies
+
+### Terms of Service
+- **User Responsibilities**: Defined usage guidelines
+- **Service Availability**: SLA commitments
+- **Liability Limitations**: Legal protections
+- **Dispute Resolution**: Arbitration procedures
+
+---
+
+*This documentation serves as the comprehensive guide for the PariwarCare healthcare management system. For technical implementation details, refer to the individual component documentation and API specifications.*
+
+**Last Updated**: December 2024  
+**Version**: 1.0.0  
+**Maintained By**: PariwarCare Development Team
