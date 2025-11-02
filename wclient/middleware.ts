@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
   if (pathname === '/auth/login' || pathname === '/auth/register') {
     if (authToken) {
       // Redirect to dashboard if already authenticated
-      return NextResponse.redirect(new URL('/lab/dashboard', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
 

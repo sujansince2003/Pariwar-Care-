@@ -24,7 +24,7 @@ export default function DashboardLayout({
               href="/dashboard/nurse"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
             >
-              Nurse Dashboard
+              Paramedic Dashboard
             </Link>
             <Link
               href="/dashboard/medical-admin"

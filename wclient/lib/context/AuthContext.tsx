@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         toast.success(response.message || 'Login successful!');
 
         // Redirect to dashboard
-        router.push('/lab/dashboard');
+        router.push('/dashboard');
       }
     } catch (error: any) {
       console.error('Login error:', error);

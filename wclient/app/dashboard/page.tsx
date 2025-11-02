@@ -21,7 +21,7 @@ export default function DashboardPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <DashboardCard
-          title="Nurse Dashboard"
+          title="Paramedic Dashboard"
           description="View assigned visits, submit vitals, and manage patient care activities."
           href="/dashboard/nurse"
         />
