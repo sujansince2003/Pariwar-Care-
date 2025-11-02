@@ -3,8 +3,12 @@
 import { Analytics } from "./Analytics"
 import { UserManagement } from "./UserManagement"
 import { NurseAssignment } from "./NurseAssignment"
+import { useRoleProtection } from "@/lib/hooks/useRoleProtection"
 
 export default function AdminDashboard() {
+  // Only ADMIN role can access this page
+  useRoleProtection(['ADMIN']);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <div className="p-6 max-w-7xl mx-auto">

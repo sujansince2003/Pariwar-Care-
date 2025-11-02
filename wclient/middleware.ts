@@ -9,10 +9,7 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get auth token from cookies or check for stored token
-  // Note: In browser, tokens are in localStorage. For middleware (server-side),
-  // we need to use cookies or headers. You might need to modify AuthContext
-  // to also store tokens in httpOnly cookies for better security.
+  // Get auth token from cookies
   const authToken = request.cookies.get('auth_token')?.value;
 
   // Check if user is trying to access protected /lab/* routes
@@ -36,16 +33,11 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure which routes to run middleware on
+// Configure which routes to run middleware on - only specific protected routes
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    '/lab/:path*',      // Protect all /lab routes
+    '/auth/login',      // Handle authenticated users on login page
+    '/auth/register',   // Handle authenticated users on register page
   ],
 };

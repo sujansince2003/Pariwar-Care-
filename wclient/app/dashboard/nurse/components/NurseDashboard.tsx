@@ -1,7 +1,13 @@
+"use client"
+
 import { NurseVisitList } from './NurseVisitList';
 import { NurseStats } from './NurseStats';
+import { useRoleProtection } from "@/lib/hooks/useRoleProtection"
 
 export default function NurseDashboard() {
+  // Only NURSE role can access this page
+  useRoleProtection(['NURSE']);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <div className="p-6 max-w-7xl mx-auto">

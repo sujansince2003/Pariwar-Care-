@@ -110,6 +110,7 @@ export default function RegisterPage() {
                 <option value="CHILD">Child (Patient)</option>
                 <option value="NURSE">Nurse (Caregiver)</option>
                 <option value="ADMIN">Admin</option>
+                <option value="MEDICAL_ADMIN">MEDICAL-ADMIN</option>
               </select>
             </div>
 
