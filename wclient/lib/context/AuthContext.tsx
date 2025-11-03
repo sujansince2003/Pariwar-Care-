@@ -65,9 +65,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Login user
    */
   const login = async (email: string, password: string): Promise<void> => {
+    console.log('AuthContext login called with:', { email, password: '***' });
     setIsLoading(true);
     try {
+      console.log('Making API call to authService.login...');
       const response = await authService.login({ email, password });
+      console.log('API response:', response);
 
       if (response.success) {
         // Store tokens in localStorage
