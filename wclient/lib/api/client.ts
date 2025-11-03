@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
 // Base API URL
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const BASE_URL = 'http://localhost:8000/api';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -15,7 +15,7 @@ const apiClient: AxiosInstance = axios.create({
 // Request interceptor to add token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('token');
+    const token = Cookies.get('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,8 +32,8 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Token expired or invalid - clear token and redirect to login
-      Cookies.remove('token');
-      Cookies.remove('user');
+      Cookies.remove('auth_token');
+      Cookies.remove('user_token');
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';
       }
@@ -211,29 +211,29 @@ export const analyticsAPI = {
 
 // Helper functions
 export const setAuthToken = (token: string) => {
-  Cookies.set('token', token, { expires: 7 }); // Token expires in 7 days
+  Cookies.set('auth_token', token, { expires: 7 }); // Token expires in 7 days
 };
 
 export const setUserData = (user: string) => {
-  Cookies.set('user', user, { expires: 7 });
+  Cookies.set('user_token', user, { expires: 7 });
 };
 
 export const getAuthToken = () => {
-  return Cookies.get('token');
+  return Cookies.get('auth_token');
 };
 
 export const getUserData = () => {
-  const userData = Cookies.get('user');
+  const userData = Cookies.get('user_token');
   return userData ? JSON.parse(userData) : null;
 };
 
 export const clearAuth = () => {
-  Cookies.remove('token');
-  Cookies.remove('user');
+  Cookies.remove('auth_token');
+  Cookies.remove('user_token');
 };
 
 export const isAuthenticated = () => {
-  return !!Cookies.get('token');
+  return !!Cookies.get('auth_token');
 };
 
 export default apiClient;
