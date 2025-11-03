@@ -12,8 +12,8 @@ export function middleware(request: NextRequest) {
   // Get auth token from cookies
   const authToken = request.cookies.get('auth_token')?.value;
 
-  // Check if user is trying to access protected /lab/* routes
-  if (pathname.startsWith('/lab')) {
+  // Check if user is trying to access protected routes
+  if (pathname.startsWith('/lab') || pathname.startsWith('/dashboard')) {
     if (!authToken) {
       // Redirect to login if not authenticated
       const loginUrl = new URL('/auth/login', request.url);
@@ -36,8 +36,9 @@ export function middleware(request: NextRequest) {
 // Configure which routes to run middleware on - only specific protected routes
 export const config = {
   matcher: [
-    '/lab/:path*',      // Protect all /lab routes
-    '/auth/login',      // Handle authenticated users on login page
-    '/auth/register',   // Handle authenticated users on register page
+    '/lab/:path*',        // Protect all /lab routes
+    '/dashboard/:path*',  // Protect all /dashboard routes
+    '/auth/login',        // Handle authenticated users on login page
+    '/auth/register',     // Handle authenticated users on register page
   ],
 };
