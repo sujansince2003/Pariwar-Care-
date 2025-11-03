@@ -13,13 +13,16 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login form submitted', { email, password: '***' });
 
     // Basic validation
     if (!email || !password) {
+      console.log('Validation failed: missing email or password');
       return;
     }
 
     try {
+      console.log('Calling login function...');
       await login(email, password);
       // Navigation is handled in the AuthContext after successful login
     } catch (error) {
