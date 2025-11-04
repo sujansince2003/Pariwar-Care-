@@ -554,6 +554,3 @@ npx prisma migrate reset
 
 *This documentation serves as the comprehensive guide for the PariwarCare healthcare management system. For technical implementation details, refer to the individual component documentation and API specifications.*
 
-**Last Updated**: December 2024  
-**Version**: 1.0.0  
-**Maintained By**: PariwarCare Development Team
